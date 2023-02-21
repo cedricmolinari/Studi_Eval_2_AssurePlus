@@ -3,36 +3,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    
 </head>
 <body>
     <h1>Inscription</h1>
-    <form>
+    <form class="form">
         <div>
-            <label for="nom">Nom :</label>
-            <input type="text" id="nom">
-        </div>
-        <div>
-            <label for="prenom">Prénom :</label>
-            <input type="text" id="prenom">
-        </div>
-        <div>
-            <label for="email">Email :</label>
-            <input type="mail" id="email">
-        </div>
-        <div>
-            <label for="numclient">Numéro client :</label>
-            <input type="text" id="numclient">
+            <label for="num_clt">Numéro client :</label>
+            <input type="text" name="num_clt">
         </div>
         <div>
             <label for="motdepasse">Mot de passe :</label>
-            <input type="password" id="motdepasse">
+            <input type="password" name="motdepasse">
+        </div>
+        <div>
+            <label for="nom">Nom :</label>
+            <input type="text" name="nom">
+        </div>
+        <div>
+            <label for="prenom">Prénom :</label>
+            <input type="text" name="prenom">
+        </div>
+        <div>
+            <label for="rue">Rue :</label>
+            <input type="text" name="rue">
+        </div>
+        <div>
+            <label for="ville">Ville :</label>
+            <input type="text" name="ville">
+        </div>
+        <div>
+            <label for="cp">Code postal :</label>
+            <input type="text" name="cp">
+        </div>
+        <div>
+            <label for="email">Email :</label>
+            <input type="mail" name="email">
         </div>
         <div>
             <label for="numerotelephone">Numéro de téléphone :</label>
-            <input type="tel" id="numerotelephone">
+            <input type="tel" name="numerotel">
         </div>
+        <button type="submit">Inscription</button>
     </form>
-    <button type="submit">Inscription</button>
+    
     <a href="./../accueil.html">Retour</a>
 </body>
+<script src="inscription.js"></script>
 </html>
