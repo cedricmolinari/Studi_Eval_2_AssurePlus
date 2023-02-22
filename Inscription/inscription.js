@@ -15,7 +15,7 @@ inscriptionForm.addEventListener('submit', event => {
     const data = Object.fromEntries(formData);
     console.log(JSON.stringify(data));
 
-    fetch('http://localhost:3000/clients', {
+    fetch('../index.js/clients', {
     method: 'POST', // or 'PUT'
     headers: {
         'Content-Type': 'application/json',
