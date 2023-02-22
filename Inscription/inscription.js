@@ -32,10 +32,10 @@ let inscriptionForm = document.querySelector('.form');
 fetch('../index.js/clients/1', {
   method: 'GET', // or 'PUT'
   headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
   }
   })
-  .then((response) => response.json())
+  .then((response) => console.log(response.json()))
   .catch((error) => {
     console.error('Error:', error);
   });
