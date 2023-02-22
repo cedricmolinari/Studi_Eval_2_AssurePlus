@@ -12,8 +12,8 @@ inscriptionForm.addEventListener('submit', event => {
     const formData = new FormData(inscriptionForm);
     const data = Object.fromEntries(formData);
     console.log(JSON.stringify(data));
-
-    fetch('../index.js/clients', {
+    
+    fetch('https://cedricmolinari.github.io/Studi_Eval_2_AssurePlus/index.js/clients', {
     method: 'POST', // or 'PUT'
     headers: {
         'Content-Type': 'application/json',
@@ -29,7 +29,7 @@ inscriptionForm.addEventListener('submit', event => {
     });
 })
 
-fetch('../index.js/clients/:id', {
+fetch('https://cedricmolinari.github.io/Studi_Eval_2_AssurePlus/index.js/clients/2', {
   method: 'GET', // or 'PUT'
   headers: {
       'Content-Type': 'application/json'
