@@ -1,6 +1,6 @@
 //connexion à la BDD MySQL
 //var mysql      = require('mysql2');
-import mysql from './node_modules/mysql2'
+import mysql from 'mysql2'
 var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
@@ -21,7 +21,7 @@ connection.connect();
 // connection.end();
 
 //création du serveur localhost
-import express from './node_modules/express'
+import express from 'express'
 const app = express()
 const port = 3000
 app.use(express.json())
