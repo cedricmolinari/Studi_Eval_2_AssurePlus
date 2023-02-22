@@ -7,9 +7,7 @@ let inputNumerotel = document.querySelector('#numerotel').value; */
 let btnValinscription = document.querySelector('#valinscription');
 let inscriptionForm = document.querySelector('.form');
 
-console.log(inscriptionForm);
-
-inscriptionForm.addEventListener('submit', event => {
+/* inscriptionForm.addEventListener('submit', event => {
     event.preventDefault();
     const formData = new FormData(inscriptionForm);
     const data = Object.fromEntries(formData);
@@ -29,4 +27,16 @@ inscriptionForm.addEventListener('submit', event => {
     .catch((error) => {
       console.error('Error:', error);
     });
-})
+}) */
+
+fetch('../index.js/clients', {
+  method: 'GET', // or 'PUT'
+  headers: {
+      'Content-Type': 'application/json',
+  },
+  body: {"id_clt":2},
+  })
+  .then((response) => response.json())
+  .catch((error) => {
+    console.error('Error:', error);
+  });
