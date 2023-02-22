@@ -29,12 +29,11 @@ let inscriptionForm = document.querySelector('.form');
     });
 }) */
 
-fetch('../index.js/clients', {
+fetch('../index.js/clients/1', {
   method: 'GET', // or 'PUT'
   headers: {
       'Content-Type': 'application/json',
-  },
-  body: {"id_clt":2},
+  }
   })
   .then((response) => response.json())
   .catch((error) => {
