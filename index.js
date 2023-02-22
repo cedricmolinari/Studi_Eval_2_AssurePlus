@@ -1,6 +1,6 @@
 //connexion à la BDD MySQL
 //var mysql      = require('mysql2');
-import mysql from 'mysql2'
+import mysql from './node_modules/mysql2'
 var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
