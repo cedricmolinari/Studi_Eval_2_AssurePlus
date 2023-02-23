@@ -2,7 +2,8 @@
 //var mysql      = require('mysql2');
 import mysql from 'mysql2'
 var connection = mysql.createConnection({
-  host     : 'localhost',
+  host     : 'localhost', // 127.0.0.1
+  port     : '3306',
   user     : 'root',
   password : 'Plouf@54150?',
   database : 'AssurePlus',
