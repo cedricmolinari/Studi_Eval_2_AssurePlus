@@ -3,7 +3,8 @@
     "node": "18.14.0"
   },
   "scripts": {
-    "build:digitalocean": "npm install --production=false && npm run build && npm ci"
+    "build:digitalocean": "npm install --production=false && npm run build && npm ci",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "type": "module",
   "dependencies": {
@@ -15,9 +16,6 @@
   "name": "assureplus---fichiers-sources-site-web",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cedricmolinari/Studi_Eval_2_AssurePlus.git"
