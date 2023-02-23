@@ -4,7 +4,7 @@ import mysql from 'mysql2'
 var connection = mysql.createConnection({
   host     : '127.0.0.1', // 127.0.0.1
   port     : '3306',
-  //socketPath: '/private/tmp/mysql.sock',
+  socketPath: '/private/tmp/mysql.sock.lock',
   user     : 'root',
   password : 'Plouf@54150?',
   database : 'AssurePlus',
