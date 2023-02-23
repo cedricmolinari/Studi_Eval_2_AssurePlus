@@ -2,6 +2,9 @@
   "engines": {
     "node": "18.14.0"
   },
+  "scripts": {
+    "build:digitalocean": "npm install --production=false && npm run build && npm ci"
+  },
   "type": "module",
   "dependencies": {
     "express": "^4.18.2",
