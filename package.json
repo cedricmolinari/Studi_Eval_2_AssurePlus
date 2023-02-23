@@ -1,6 +1,6 @@
 {
   "engines": {
-    "node": "18.14.0"
+    "node": "17.9.1"
   },
   "scripts": {
     "build:digitalocean": "npm install --production=false && npm run build && npm ci",
