@@ -5,7 +5,7 @@ var connection = mysql.createConnection({
   host     : '127.0.0.1', // 127.0.0.1
   port     : '3306',
   //socketPath: 'tmp/mysql.sock',
-  user     : 'root',
+  user     : 'Molinari',
   password : 'Plouf@54150?',
   database : 'AssurePlus',
   multipleStatements:true
