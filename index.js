@@ -2,7 +2,7 @@
 //var mysql      = require('mysql2');
 import mysql from 'mysql2'
 var connection = mysql.createConnection({
-  host     : '127.0.0.1', // 127.0.0.1
+  host     : '[::1]', // 127.0.0.1
   port     : '3306',
   //socketPath: 'tmp/mysql.sock',
   user     : 'Molinari',
