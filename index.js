@@ -2,10 +2,10 @@
 //var mysql      = require('mysql2');
 import mysql from 'mysql2'
 var connection = mysql.createConnection({
+  //socketPath: '/var/run/mysqld/mysql.sock',
   host     : '127.0.0.1', // 127.0.0.1
   port     : '3306',
-  //socketPath: 'tmp/mysql.sock',
-  user     : 'Molinari',
+  user     : 'root',
   password : 'Plouf@54150?',
   database : 'AssurePlus',
   multipleStatements:true
