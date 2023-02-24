@@ -1,6 +1,6 @@
 //connexion à la BDD MySQL
 //var mysql      = require('mysql2');
-import mysql from 'mysql2'
+/* import mysql from 'mysql2'
 var connection = mysql.createConnection({
   socketPath: '/tmp/mysql.sock',
   host     : '127.0.0.1', // 127.0.0.1
@@ -11,7 +11,7 @@ var connection = mysql.createConnection({
   multipleStatements:true
 });
 
-connection.connect();
+connection.connect(); */
 
 //requête BDD
 /* connection.query('select * from clients', function(err, rows, fields) {
