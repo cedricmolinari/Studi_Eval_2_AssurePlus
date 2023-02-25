@@ -8,7 +8,10 @@ const pgsql = new Client({
   database: 'AssurePlus',
   password: 'AVNS_aTgfOfY41WZsV5L5Ktu',
   port: '25060',
-  sslmode: 'require'
+  ssl: {
+    rejectUnauthorized: false,
+    ca: fs.readFileSync('root.crt').toString()
+  },
 });
 pgsql.connect(function(err) {
   if (err) throw err;
