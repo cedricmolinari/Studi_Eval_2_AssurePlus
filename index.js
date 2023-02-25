@@ -1,17 +1,17 @@
-//connexion à la BDD MySQL
-//var mysql      = require('mysql2');
-/* import mysql from 'mysql2'
-var connection = mysql.createConnection({
-  socketPath: '/tmp/mysql.sock',
-  host     : '127.0.0.1', // 127.0.0.1
-  port     : '3306',
-  user     : 'root',
-  password : 'Plouf@54150?',
-  database : 'AssurePlus',
-  multipleStatements:true
-});
 
-connection.connect(); */
+//connexion à la BDD pgsql
+import pgsql from 'pg'
+const pgsql = new Client({
+  user: 'doadmin',
+  host: 'app-27a8f32e-6c33-4e20-a7b5-f5b159af7b48-do-user-13582571-0.b.db.ondigitalocean.com',
+  database: 'AssurePlus',
+  password: 'AVNS_aTgfOfY41WZsV5L5Ktu',
+  port: '25060'
+})
+pgsql.connect(function(err) {
+  if (err) throw err;
+  console.log("Connected!");
+});
 
 //requête BDD
 /* connection.query('select * from clients', function(err, rows, fields) {
@@ -43,6 +43,25 @@ app.get('/clients/:id', (req, res)  => {
     res.send(rows)
   })
 })
+
+/* create PROCEDURE public.clientsAdd(
+IN _num_clt INT,
+IN _mdp_clt VARCHAR(250),
+IN _nom_clt VARCHAR(100),
+IN _prenom_clt VARCHAR(100),
+IN _rue_clt VARCHAR(100),
+IN _ville_clt VARCHAR(100),
+IN _cp_clt VARCHAR(5),
+IN _mail_clt VARCHAR(100),
+IN _tel_clt VARCHAR(20)
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+
+BEGIN
+	INSERT INTO clients (num_clt, mdp_clt, nom_clt, prenom_clt, rue_clt, ville_clt, cp_clt, mail_clt, tel_clt) VALUES (_num_clt, _mdp_clt, _nom_clt, _prenom_clt, _rue_clt, _ville_clt, _cp_clt, _mail_clt, _tel_clt);
+END;
+$BODY$; */
 
 app.post('/clients', (req, res) => {
   let clt = req.body;
