@@ -1,5 +1,6 @@
 
 //connexion à la BDD pgsql
+import fs from 'fs';
 import pkg from 'pg';
 const { Client } = pkg;
 const pgsql = new Client({
