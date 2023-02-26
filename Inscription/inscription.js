@@ -7,7 +7,7 @@ let inputNumerotel = document.querySelector('#numerotel').value; */
 let btnValinscription = document.querySelector('#valinscription');
 let inscriptionForm = document.querySelector('.form');
 
-inscriptionForm.addEventListener('submit', event => {
+/* inscriptionForm.addEventListener('submit', event => {
     event.preventDefault();
     const formData = new FormData(inscriptionForm);
     const data = Object.fromEntries(formData);
@@ -39,3 +39,4 @@ fetch('../index.js/clients/2', {
   .catch((error) => {
     console.error('Error:', error);
   });
+ */
