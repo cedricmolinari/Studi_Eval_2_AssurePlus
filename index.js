@@ -34,7 +34,7 @@ const app = express()
 const port = 8080
 app.use(express.json())
 
-app.get('/clients', (req, res)  => {
+/* app.get('/clients', (req, res)  => {
   var sql = "SELECT * FROM clients;"
   connection.query(sql,function(err, rows, fields) {
     if (err) throw err;
@@ -48,7 +48,7 @@ app.get('/clients/:id', (req, res)  => {
     if (err) throw err;
     res.send(rows)
   })
-})
+}) */
 
 /* create PROCEDURE public.clientsAdd(
 IN _num_clt INT,
