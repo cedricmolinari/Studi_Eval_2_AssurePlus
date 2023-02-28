@@ -34,15 +34,15 @@ const app = express()
 const port = 8080
 app.use(express.json())
 
-app.get("https://goldfish-app-2-2cozk.ondigitalocean.app/", (req, res) => {
+app.get("/", (req, res) => {
   res.send(index.html);
 });
 
-app.get("https://goldfish-app-2-2cozk.ondigitalocean.app/messages", (req, res) => {
+app.get("/messages", (req, res) => {
   res.send("Hello");
 });
 
-app.get("https://goldfish-app-2-2cozk.ondigitalocean.app/:universalURL", (req, res) => {
+app.get("/:universalURL", (req, res) => {
   res.send("404 URL NOT FOUND");
 });
 
