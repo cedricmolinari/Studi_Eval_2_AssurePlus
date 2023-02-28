@@ -78,7 +78,7 @@ BEGIN
 END;
 $BODY$; */
 
-app.post('/clients', (req, res) => {
+/* app.post('/clients', (req, res) => {
   let clt = req.body;
   var sql = "SET @num_clt = ?, @mdp_clt = ?, @nom_clt = ?, @prenom_clt = ?, @rue_clt = ?, @ville_clt = ?, @cp_clt = ?, @mail_clt = ?, @tel_clt = ?; \
   CALL clientsAdd(@num_clt, @mdp_clt, @nom_clt, @prenom_clt, @rue_clt, @ville_clt, @cp_clt, @mail_clt, @tel_clt);";
@@ -89,7 +89,7 @@ app.post('/clients', (req, res) => {
     console.log(err);
   })
 
-})
+}) */
 
 app.listen(port, () => {
   console.log(`Serveur démarré`)
