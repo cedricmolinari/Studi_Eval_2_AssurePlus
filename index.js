@@ -34,6 +34,15 @@ const app = express()
 const port = 8080
 app.use(express.json())
 
+app.get("/messages", (req, res) => {
+  res.send("Hello");
+});
+
+app.get("/:universalURL", (req, res) => {
+  res.send("404 URL NOT FOUND");
+});
+
+
 /* app.get('/clients', (req, res)  => {
   var sql = "SELECT * FROM clients;"
   connection.query(sql,function(err, rows, fields) {
