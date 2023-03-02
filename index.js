@@ -49,8 +49,12 @@ app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.get("/messages", (req, res) => {
-  res.send("Hello");
+app.get("/Connexion/", (req, res) => {
+  res.sendFile(path.join(__dirname, '/Connexion/connexion.html'));
+});
+
+app.get("/Inscription/", (req, res) => {
+  res.sendFile(path.join(__dirname, '/Inscription/inscription.html'));
 });
 
 app.get("/:universalURL", (req, res) => {
