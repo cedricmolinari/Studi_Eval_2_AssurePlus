@@ -37,7 +37,7 @@ app.use(express.json())
 
 app.get('/', function(req, res) {
   //res.send('hello world');
-  res.sendFile(path.join(__dirname, '/index.html'));
+  res.sendFile(path.join('/index.html'));
 });
 
 app.get("/messages", (req, res) => {
