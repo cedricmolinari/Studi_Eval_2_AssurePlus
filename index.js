@@ -49,11 +49,11 @@ app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.get("/Connexion/", (req, res) => {
+app.get("/Connexion/connexion.html", (req, res) => {
   res.sendFile(path.join(__dirname, '/Connexion/connexion.html'));
 });
 
-app.get("/Inscription/", (req, res) => {
+app.get("/Inscription/inscription.html", (req, res) => {
   res.sendFile(path.join(__dirname, '/Inscription/inscription.html'));
 });
 
