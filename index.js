@@ -35,7 +35,8 @@ const port = 8080
 app.use(express.json())
 
 app.get('/', function(req, res) {
-  res.send('hello world');
+  //res.send('hello world');
+  res.sendFile(path.join(__dirname, '/index.html'));
 });
 
 app.get("/messages", (req, res) => {
