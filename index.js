@@ -44,7 +44,7 @@ app.use(express.json())
 
 
 
-app.get('/', function(req, res) {
+app.get('/' || '/index.html', function(req, res) {
   //res.send('hello world');
   res.sendFile(path.join(__dirname, 'index.html'));
 });
