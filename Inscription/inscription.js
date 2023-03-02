@@ -28,6 +28,7 @@ let inscriptionForm = document.querySelector('.form');
       console.error('Error:', error);
     });
 })
+*/
 
 fetch('../index.js/clients/2', {
   method: 'GET', // or 'PUT'
@@ -39,4 +40,4 @@ fetch('../index.js/clients/2', {
   .catch((error) => {
     console.error('Error:', error);
   });
- */
+ 
