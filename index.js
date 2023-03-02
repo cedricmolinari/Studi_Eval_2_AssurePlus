@@ -45,7 +45,10 @@ app.use(express.json())
 
 
 app.get('/' || '/index.html', function(req, res) {
-  //res.send('hello world');
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/index.html', function(req, res) {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
@@ -62,7 +65,7 @@ app.get("/:universalURL", (req, res) => {
 });
 
 
-/* app.get('/clients', (req, res)  => {
+app.get('/clients', (req, res)  => {
   var sql = "SELECT * FROM clients;"
   connection.query(sql,function(err, rows, fields) {
     if (err) throw err;
@@ -70,6 +73,7 @@ app.get("/:universalURL", (req, res) => {
   })
 })
 
+/*
 app.get('/clients/:id', (req, res)  => {
   var sql = "SELECT * FROM clients WHERE id_clt = ?;"
   connection.query(sql, [req.params.id], (err, rows, fields) => {
