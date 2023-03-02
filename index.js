@@ -67,7 +67,7 @@ app.get("/:universalURL", (req, res) => {
 
 app.get('/clients', (req, res)  => {
   var sql = "SELECT * FROM clients;"
-  connection.query(sql,function(err, rows, fields) {
+  pgsql.query(sql,function(err, rows, fields) {
     if (err) throw err;
     res.send(rows)
   })
@@ -76,7 +76,7 @@ app.get('/clients', (req, res)  => {
 
 app.get('/clients/:id', (req, res)  => {
   var sql = "SELECT * FROM clients WHERE id_clt = ?;"
-  connection.query(sql, [req.params.id], (err, rows, fields) => {
+  pgsql.query(sql, [req.params.id], (err, rows, fields) => {
     if (err) throw err;
     res.send(rows)
   })
