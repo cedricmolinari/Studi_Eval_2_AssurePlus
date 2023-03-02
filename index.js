@@ -73,14 +73,14 @@ app.get('/clients', (req, res)  => {
   })
 })
 
-/*
+
 app.get('/clients/:id', (req, res)  => {
   var sql = "SELECT * FROM clients WHERE id_clt = ?;"
   connection.query(sql, [req.params.id], (err, rows, fields) => {
     if (err) throw err;
     res.send(rows)
   })
-}) */
+})
 
 /* create PROCEDURE public.clientsAdd(
 IN _num_clt INT,
