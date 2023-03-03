@@ -20,11 +20,11 @@ pgsql.connect(function(err) {
 });
 
 //requête BDD
-/* connection.query('select * from clients', function(err, rows, fields) {
+pgsql.query('select id_clt from \"Clients\"', function(err, rows, fields) {
   if (err) throw err;
-  clients = JSON.stringify(rows)
+  //clients = JSON.stringify(rows)
   console.log('The result is: ' + JSON.stringify(rows));
-}); */
+});
 
 // connection.end();
 
@@ -44,7 +44,7 @@ app.use(express.json())
 
 
 
-app.get('/' || '/index.html', function(req, res) {
+app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
@@ -69,7 +69,10 @@ app.get('/clients', (req, res)  => {
   var sql = "select * from public.\"Clients\";"
   pgsql.query(sql,function(err, rows, fields) {
     if (err) throw err;
-    res.send(rows)
+    res.send(JSON.stringify(rows))
+    console.log(res.send(JSON.stringify(rows)));
+    console.log(request.headers);
+    console.log(request.query);
   })
 })
 
@@ -103,9 +106,9 @@ $BODY$; */
 
 app.post('/clients', (req, res) => {
   let clt = req.body;
-  var sql = "SET @num_clt = ?, @mdp_clt = ?, @nom_clt = ?, @prenom_clt = ?, @rue_clt = ?, @ville_clt = ?, @cp_clt = ?, @mail_clt = ?, @tel_clt = ?; \
+  var sql = "SET @num_clt = ?, @nom_clt = ?, @prenom_clt = ?, @rue_clt = ?, @ville_clt = ?, @cp_clt = ?, @mail_clt = ?, @tel_clt = ?, @mdp_clt = ?; \
   CALL clientsAdd(@num_clt, @mdp_clt, @nom_clt, @prenom_clt, @rue_clt, @ville_clt, @cp_clt, @mail_clt, @tel_clt);";
-  connection.query(sql, [clt.num_clt, clt.mdp_clt, clt.nom_clt, clt.prenom_clt, clt.rue_clt, clt.ville_clt, clt.cp_clt, clt.mail_clt, clt.tel_clt], (err, rows, fields) => {
+  connection.query(sql, [clt.num_clt, clt.nom_clt, clt.prenom_clt, clt.rue_clt, clt.ville_clt, clt.cp_clt, clt.mail_clt, clt.tel_clt, clt.mdp_clt], (err, rows, fields) => {
     if (!err)
     res.send(rows);
     else
