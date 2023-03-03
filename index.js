@@ -60,8 +60,8 @@ app.get("/Inscription/inscription.html", (req, res) => {
   res.sendFile(path.join(__dirname, '/Inscription/inscription.html'));
 });
 
-app.get("/:universalURL", (req, res) => {
-  res.send("404 URL NOT FOUND");
+app.get("/v2/databases", (req, res) => {
+  res.send("ok");
 });
 
 
