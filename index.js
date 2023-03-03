@@ -60,28 +60,21 @@ app.get("/Inscription/inscription.html", (req, res) => {
   res.sendFile(path.join(__dirname, '/Inscription/inscription.html'));
 });
 
-app.get("/v2/databases", (req, res) => {
-  res.send("ok");
-});
 
-
-app.get('/clients', (req, res)  => {
+app.get('/get/clients', (req, res)  => {
   var sql = "select * from public.\"Clients\";"
   pgsql.query(sql,function(err, rows, fields) {
     if (err) throw err;
     res.send(JSON.stringify(rows))
-    console.log(res.send(JSON.stringify(rows)));
-    console.log(request.headers);
-    console.log(request.query);
   })
 })
 
 
-app.get('/clients/:id', (req, res)  => {
+app.get('/get/clients/:id', (req, res)  => {
   var sql = "SELECT * FROM public.\"Clients\" WHERE id_clt = ?;"
   pgsql.query(sql, [req.params.id], (err, rows, fields) => {
     if (err) throw err;
-    res.send(rows)
+    res.send(JSON.stringify(rows))
   })
 })
 
@@ -104,7 +97,7 @@ BEGIN
 END;
 $BODY$; */
 
-app.post('/clients', (req, res) => {
+app.post('/post/clients', (req, res) => {
   let clt = req.body;
   var sql = "SET @num_clt = ?, @nom_clt = ?, @prenom_clt = ?, @rue_clt = ?, @ville_clt = ?, @cp_clt = ?, @mail_clt = ?, @tel_clt = ?, @mdp_clt = ?; \
   CALL clientsAdd(@num_clt, @mdp_clt, @nom_clt, @prenom_clt, @rue_clt, @ville_clt, @cp_clt, @mail_clt, @tel_clt);";
