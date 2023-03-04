@@ -19,12 +19,12 @@ pgsql.connect(function(err) {
   console.log("Connected!");
 });
 
-//requête BDD
+/* //requête BDD
 pgsql.query('select id_clt from \"Clients\"', function(err, rows, fields) {
   if (err) throw err;
   //clients = JSON.stringify(rows)
   console.log('The result is: ' + JSON.stringify(rows));
-});
+}); */
 
 // connection.end();
 
