@@ -56,14 +56,13 @@ app.get("/", (req, res) => {
 
 app.post("/", (req, res) => {
   const test = req.body;
-  var sql = "SET @nom_test = ?; CALL testadd(@nom_test);"
+  var sql = "CALL testadd(2, @nom_test);"
   pgsql.query(sql, [test.nom_test], (err, rows, fields) => {
     if (!err)
     res.send(rows);
     else
     console.log(err);
   })
-  res.send("Data received");
 });
 
 app.get('/index.html', function(req, res) {
