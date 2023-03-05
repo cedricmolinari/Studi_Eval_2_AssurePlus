@@ -105,11 +105,11 @@ app.get('/get/clients/:id', (req, res)  => {
 app.post('/', (request, response) => {
     const { nom_test } = request.body
 
-    pool.query('INSERT INTO test (id, nom_test) VALUES ($1, $2) RETURNING *', [nom_test], (error, results) => {
+    pool.query('INSERT INTO test (nom_test) VALUES ($1) RETURNING *', [nom_test], (error, results) => {
       if (error) {
         throw error
       }
-      response.status(201).send(`User added with ID: ${results.rows[0].id}`)
+      response.status(201).send(`User added with ID: ${results.rows[0].nom_test}`)
     })
   }
 )
