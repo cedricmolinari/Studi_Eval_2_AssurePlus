@@ -63,7 +63,6 @@ app.post("/", (req, res) => {
     else
     console.log(err);
   })
-  console.log("Username: " + nom);
   res.send("Data received");
 });
 
