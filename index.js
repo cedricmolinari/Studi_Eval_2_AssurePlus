@@ -35,17 +35,27 @@ import path from 'path'
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
+
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express()
 const port = 8080
-app.use(express.json())
-
+app.use(express.json());     
+app.use(express.urlencoded({extended: true})); 
 
 
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.post("/", (req, res) => {
+  const username = req.body.username;
+  const password = req.body.password;
+  console.log("Username: " + username);
+  console.log("Password: " + password);
+  res.send("Data received");
 });
 
 app.get('/index.html', function(req, res) {
@@ -102,7 +112,7 @@ SET num_clt = 567, nom_clt = 'MARTIN', prenom_clt = 'Alexandre', rue_clt ='61 ru
   CALL clientsAdd(@num_clt, @mdp_clt, @nom_clt, @prenom_clt, @rue_clt, @ville_clt, @cp_clt, @mail_clt, @tel_clt);
   */
 
-app.post('/get/clients', (req, res) => {
+/* app.post('/get/clients', (req, res) => {
   let clt = req.body;
   var sql = "SET @num_clt = ?, @nom_clt = ?, @prenom_clt = ?, @rue_clt = ?, @ville_clt = ?, @cp_clt = ?, @mail_clt = ?, @tel_clt = ?, @mdp_clt = ?; \
   CALL clientsadd(@num_clt, @mdp_clt, @nom_clt, @prenom_clt, @rue_clt, @ville_clt, @cp_clt, @mail_clt, @tel_clt);";
@@ -113,7 +123,7 @@ app.post('/get/clients', (req, res) => {
     console.log(err);
   })
 
-})
+}) */
 
 app.listen(port, () => {
   console.log(`Serveur démarré`)
