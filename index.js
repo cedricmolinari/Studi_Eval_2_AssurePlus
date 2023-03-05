@@ -14,6 +14,10 @@ const pgsql = new Client({
     ca: fs.readFileSync('root.crt').toString()
   },
 });
+
+/* In a production environment, you would want to put your configuration details in a separate file with restrictive permissions so that it is
+ not accessible from version control. But, for the simplicity of this tutorial, we’ll keep it in the same file as the queries. */
+
 pgsql.connect(function(err) {
   if (err) throw err;
   console.log("Connected!");
@@ -78,13 +82,16 @@ app.get("/Inscription/inscription.html", (req, res) => {
 });
 
 
-app.get('/get/clients', (req, res)  => {
-  var sql = "select * from public.\"Clients\";"
-  pgsql.query(sql,function(err, rows, fields) {
-    if (err) throw err;
-    res.send(JSON.stringify(rows))
-  })
-})
+app.get('/get/clients', (request, response) => {
+    pool.query('SELECT * FROM test', (error, results) => {
+      if (error) {
+        throw error
+      }
+      response.status(200).json(results.rows)
+    })
+  }
+)
+
 
 
 app.get('/get/clients/:id', (req, res)  => {
@@ -94,6 +101,18 @@ app.get('/get/clients/:id', (req, res)  => {
     res.send(JSON.stringify(rows))
   })
 })
+
+app.post('/', (request, response) => {
+    const { nom_test } = request.body
+
+    pool.query('INSERT INTO test (id, nom_test) VALUES ($1, $2) RETURNING *', [nom_test], (error, results) => {
+      if (error) {
+        throw error
+      }
+      response.status(201).send(`User added with ID: ${results.rows[0].id}`)
+    })
+  }
+)
 
 /* create PROCEDURE public.clientsAdd(
 IN _num_clt INT,
