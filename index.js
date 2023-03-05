@@ -51,10 +51,8 @@ app.get('/', function(req, res) {
 });
 
 app.post("/", (req, res) => {
-  const username = req.body.username;
-  const password = req.body.password;
-  console.log("Username: " + username);
-  console.log("Password: " + password);
+  const nom = req.body.nom_test;
+  console.log("Username: " + nom);
   res.send("Data received");
 });
 
