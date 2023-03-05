@@ -46,8 +46,12 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true})); 
 
 
-app.get('/', function(req, res) {
+/* app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, 'index.html'));
+}); */
+
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/index.html");
 });
 
 app.post("/", (req, res) => {
