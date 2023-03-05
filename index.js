@@ -58,7 +58,7 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
 
-app.post("/", (req, res) => {
+/* app.post("/", (req, res) => {
   const test = req.body;
   var sql = "CALL testadd(2, @nom_test);"
   pgsql.query(sql, [test.nom_test], (err, rows, fields) => {
@@ -67,7 +67,7 @@ app.post("/", (req, res) => {
     else
     console.log(err);
   })
-});
+}); */
 
 app.get('/index.html', function(req, res) {
   res.sendFile(path.join(__dirname, 'index.html'));
@@ -83,7 +83,7 @@ app.get("/Inscription/inscription.html", (req, res) => {
 
 
 app.get('/get/clients', (request, response) => {
-    pool.query('SELECT * FROM test', (error, results) => {
+    pgsql.query('SELECT * FROM test', (error, results) => {
       if (error) {
         throw error
       }
@@ -105,7 +105,7 @@ app.get('/get/clients/:id', (req, res)  => {
 app.post('/', (request, response) => {
     const { nom_test } = request.body
 
-    pool.query('INSERT INTO test (nom_test) VALUES ($1) RETURNING *', [nom_test], (error, results) => {
+    pgsql.query('INSERT INTO test (nom_test) VALUES ($1) RETURNING *', [nom_test], (error, results) => {
       if (error) {
         throw error
       }
