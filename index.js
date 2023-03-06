@@ -103,9 +103,9 @@ app.get('/get/clients/:id', (req, res)  => {
 })
 
 app.post('/', (request, response) => {
-    const { nom_test } = request.body
+    const { inscription } = request.body
 
-    pgsql.query('INSERT INTO test (nom_test) VALUES ($1) RETURNING *', [nom_test], (error, results) => {
+    pgsql.query('INSERT INTO test (nom_test) VALUES (${inscription.name})', [nom_test], (error, results) => {
       if (error) {
         throw error
       }
