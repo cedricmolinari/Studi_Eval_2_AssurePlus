@@ -1,38 +1,5 @@
-
-//connexion à la BDD pgsql
-import fs from 'fs';
-import pkg from 'pg';
-const { Client } = pkg;
-const pgsql = new Client({
-  user: 'doadmin',
-  host: 'app-27a8f32e-6c33-4e20-a7b5-f5b159af7b48-do-user-13582571-0.b.db.ondigitalocean.com',
-  database: 'AssurePlus',
-  password: 'AVNS_aTgfOfY41WZsV5L5Ktu',
-  port: '25060',
-  ssl: {
-    rejectUnauthorized: false,
-    ca: fs.readFileSync('root.crt').toString()
-  },
-});
-
-/* In a production environment, you would want to put your configuration details in a separate file with restrictive permissions so that it is
- not accessible from version control. But, for the simplicity of this tutorial, we’ll keep it in the same file as the queries. */
-
-pgsql.connect(function(err) {
-  if (err) throw err;
-  console.log("Connected!");
-});
-
-/* //requête BDD
-pgsql.query('select id_clt from \"Clients\"', function(err, rows, fields) {
-  if (err) throw err;
-  //clients = JSON.stringify(rows)
-  console.log('The result is: ' + JSON.stringify(rows));
-}); */
-
-// connection.end();
-
 //création du serveur localhost
+import pgsql from './BDD/connexionBDD.js'
 import express from 'express'
 import path from 'path'
 
@@ -46,13 +13,9 @@ const __dirname = dirname(__filename);
 
 const app = express()
 const port = 8080
+
 app.use(express.json());     
 app.use(express.urlencoded({extended: true})); 
-
-
-/* app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname, 'index.html'));
-}); */
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
@@ -73,14 +36,13 @@ app.get('/index.html', function(req, res) {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.get("/Connexion/connexion.html", (req, res) => {
+app.get('/Connexion/connexion.html', (req, res) => {
   res.sendFile(path.join(__dirname, '/Connexion/connexion.html'));
 });
 
-app.get("/Inscription/inscription.html", (req, res) => {
+app.get('/Inscription/inscription.html', (req, res) => {
   res.sendFile(path.join(__dirname, '/Inscription/inscription.html'));
 });
-
 
 app.get('/get/clients', (request, response) => {
     pgsql.query('SELECT * FROM test', (error, results) => {
@@ -152,5 +114,5 @@ SET num_clt = 567, nom_clt = 'MARTIN', prenom_clt = 'Alexandre', rue_clt ='61 ru
 }) */
 
 app.listen(port, () => {
-  console.log(`Serveur démarré`)
+  console.log(`Serveur démarré sur le port : ${port}`)
 })
