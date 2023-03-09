@@ -14,9 +14,6 @@ const pgsql = new Client({
   },
 });
 
-pgsql.connect(function(err) {
-  if (err) throw err;
-  console.log("Connected!");
-});
+
 
 export default pgsql
