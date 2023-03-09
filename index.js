@@ -4,10 +4,12 @@ import express from 'express'
 import path from 'path'
 import morgan from 'morgan';
 import https from 'https';
+import config from './config.json' assert { type: "json" };
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { success, error } from './functions.js'
+import functions from './functions.js'
+const { success, error } = functions;
 
 
 
