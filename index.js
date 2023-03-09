@@ -20,19 +20,21 @@ const app = express()
 const port = 8080
 
 pgsql.connect((err) => {
-  if (err)
+  if (err) {
+    
     console.log(err.message);
-  else {
+
+  } else {
 
     console.log("Connected!");
 
-    let MembersRouter = express.Router()
+    let TestRouter = express.Router()
 
     app.use(morgan('dev'))
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
-    MembersRouter.route('/:id')
+    TestRouter.route('/:id')
 
       // Récupère un membre avec ID
       .get((req, res) => {
@@ -83,7 +85,7 @@ pgsql.connect((err) => {
         }
       })
 
-    MembersRouter.route('/')
+    TestRouter.route('/')
 
       // Ajoute un membre avec son nom
       .post((req, res) => {
@@ -119,7 +121,7 @@ pgsql.connect((err) => {
         }
       })
 
-    app.use(config.rootAPI + 'members', MembersRouter)
+    app.use(config.rootAPI + 'test', TestRouter)
     app.listen(config.port, () => console.log('Started on port ' + config.port))
   }
 });
