@@ -16,7 +16,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express()
-const port = 8080
 
 import fs from 'fs';
 import pkg from 'pg';
@@ -33,7 +32,107 @@ const pgsql = new Client({
   },
 });
 
-pgsql.connect((err) => {
+pgsql.connect()
+
+
+let TestRouter = express.Router()
+
+app.use(morgan('dev'))
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+TestRouter.route('/:id')
+
+// Récupère un membre avec ID
+.get((req, res) => {
+  pgsql.query('SELECT * FROM test where id = ?', [req.params.id], (err, result) => {
+    if (err) {
+      res.json(error(err.message))
+    } else {
+
+      if (result[0] != undefined) {
+        res.json(success(result[0]))
+      } else {
+        res.json(error('Wrong id'))
+      }
+    }
+  })
+})
+
+// Modifie un membre avec ID
+.put((req, res) => {
+  if (req.body.nom_test) {
+    pgsql.query('SELECT * FROM test WHERE id = ?', [req.params.id], (err, result) => {
+      if (err) {
+        res.json(error(err.message))
+      } else {
+        if (result[0] != undefined) {
+          pgsql.query('SELECT * FROM test WHERE nom_test = ? AND id != ?', [req.body.nom_test, req.params.id], (err, result) => {
+            if (err) {
+              res.json(error(err.message))
+            } else {
+              if (result[0] != undefined) {
+                res.json(error('same name'))
+              } else {
+                pgsql.query('UPDATE test SET nom_test = ? WHERE id = ?', [req.body.nom_test, req.params.id], (err, result) => {
+                  if (err) {
+                    res.json(error(err.message))
+                  } else {
+                    res.json(success(true))
+                  }
+                })
+              }
+            }
+          })
+        } else {
+          res.json(error('Wrong id'))
+        }
+      }
+    })
+  }
+})
+
+TestRouter.route('/')
+
+// Ajoute un membre avec son nom
+.post((req, res) => {
+  if (req.body.nom_test) {
+    pgsql.query('SELECT * FROM test WHERE nom_test = ?', [req.body.nom_test], (err, result) => {
+      if (err) {
+        res.json(error(err.message))
+      } else {
+        if (result[0] != undefined) {
+          res.json(error('name already taken'))
+        } else {
+          pgsql.query('INSERT INTO test(nom_test) VALUES(?)', [req.body.nom_test], (err, result) => {
+            if (err) {
+              res.json(error(err.message))
+            } else {
+              pgsql.query('SELECT * FROM test WHERE nom_test = ?', [req.body.nom_test], (err, result) => {
+                if (err) {
+                  res.json(error(err.message))
+                } else {
+                  res.json(success({
+                    id: result[0].id,
+                    nom_test: result[0].nom_test
+                  }))
+                }
+              })
+            }
+          })
+        }
+      }
+    })
+  } else {
+    res.json(error('no name value'))
+  }
+})
+
+app.use(config.rootAPI + 'test', TestRouter)
+app.listen(config.port, () => console.log('Started on port ' + config.port))
+
+
+/* pgsql.connect((err) => {
   if (err) {
     
     console.log(err.message);
@@ -138,10 +237,7 @@ pgsql.connect((err) => {
     app.use(config.rootAPI + 'test', TestRouter)
     app.listen(config.port, () => console.log('Started on port ' + config.port))
   }
-});
-
-
-
+}); */
 
 
 
