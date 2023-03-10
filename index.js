@@ -1,5 +1,5 @@
 //création du serveur localhost
-
+import pgsql from './BDD/connexionBDD.js'
 import express from 'express'
 import path from 'path'
 import morgan from 'morgan';
@@ -17,122 +17,7 @@ const __dirname = dirname(__filename);
 
 const app = express()
 
-import fs from 'fs';
-import pkg from 'pg';
-const { Client } = pkg;
-const pgsql = new Client({
-  user: 'doadmin',
-  host: 'app-27a8f32e-6c33-4e20-a7b5-f5b159af7b48-do-user-13582571-0.b.db.ondigitalocean.com',
-  database: 'AssurePlus',
-  password: 'AVNS_aTgfOfY41WZsV5L5Ktu',
-  port: '25060',
-  ssl: {
-    rejectUnauthorized: false,
-    ca: fs.readFileSync('root.crt').toString()
-  },
-});
-
-pgsql.connect()
-
-
-let TestRouter = express.Router()
-
-app.use(morgan('dev'))
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-TestRouter.route('/:id')
-
-// Récupère un membre avec ID
-.get((req, res) => {
-  pgsql.query('SELECT * FROM test where id = ?', [req.params.id], (err, result) => {
-    if (err) {
-      res.json(error(err.message))
-    } else {
-
-      if (result[0] != undefined) {
-        res.json(success(result[0]))
-      } else {
-        res.json(error('Wrong id'))
-      }
-    }
-  })
-})
-
-// Modifie un membre avec ID
-.put((req, res) => {
-  if (req.body.nom_test) {
-    pgsql.query('SELECT * FROM test WHERE id = ?', [req.params.id], (err, result) => {
-      if (err) {
-        res.json(error(err.message))
-      } else {
-        if (result[0] != undefined) {
-          pgsql.query('SELECT * FROM test WHERE nom_test = ? AND id != ?', [req.body.nom_test, req.params.id], (err, result) => {
-            if (err) {
-              res.json(error(err.message))
-            } else {
-              if (result[0] != undefined) {
-                res.json(error('same name'))
-              } else {
-                pgsql.query('UPDATE test SET nom_test = ? WHERE id = ?', [req.body.nom_test, req.params.id], (err, result) => {
-                  if (err) {
-                    res.json(error(err.message))
-                  } else {
-                    res.json(success(true))
-                  }
-                })
-              }
-            }
-          })
-        } else {
-          res.json(error('Wrong id'))
-        }
-      }
-    })
-  }
-})
-
-TestRouter.route('/')
-
-// Ajoute un membre avec son nom
-.post((req, res) => {
-  if (req.body.nom_test) {
-    pgsql.query('SELECT * FROM test WHERE nom_test = ?', [req.body.nom_test], (err, result) => {
-      if (err) {
-        res.json(error(err.message))
-      } else {
-        if (result[0] != undefined) {
-          res.json(error('name already taken'))
-        } else {
-          pgsql.query('INSERT INTO test(nom_test) VALUES(?)', [req.body.nom_test], (err, result) => {
-            if (err) {
-              res.json(error(err.message))
-            } else {
-              pgsql.query('SELECT * FROM test WHERE nom_test = ?', [req.body.nom_test], (err, result) => {
-                if (err) {
-                  res.json(error(err.message))
-                } else {
-                  res.json(success({
-                    id: result[0].id,
-                    nom_test: result[0].nom_test
-                  }))
-                }
-              })
-            }
-          })
-        }
-      }
-    })
-  } else {
-    res.json(error('no name value'))
-  }
-})
-
-app.use(config.rootAPI + 'test', TestRouter)
-app.listen(config.port, () => console.log('Started on port ' + config.port))
-
-
-/* pgsql.connect((err) => {
+pgsql.connect((err) => {
   if (err) {
     
     console.log(err.message);
@@ -237,7 +122,7 @@ app.listen(config.port, () => console.log('Started on port ' + config.port))
     app.use(config.rootAPI + 'test', TestRouter)
     app.listen(config.port, () => console.log('Started on port ' + config.port))
   }
-}); */
+});
 
 
 
