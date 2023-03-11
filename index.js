@@ -85,6 +85,22 @@ pgsql.connect((err) => {
 
     TestRouter.route('/')
 
+      // Récupère un membre avec ID
+      .get((req, res) => {
+        pgsql.query('SELECT * FROM test', (err, result) => {
+          if (err) {
+            res.json(error(err.message))
+          } else {
+
+            if (result[0] != undefined) {
+              res.json(success(result[0]))
+            } else {
+              res.json(error('Wrong id'))
+            }
+          }
+        })
+      })
+
       // Ajoute un membre avec son nom
       .post((req, res) => {
         if (req.body.nom_test) {
