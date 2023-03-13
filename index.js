@@ -33,10 +33,6 @@ const pgsql = new Client({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use((req, res, next) => {
-  console.log('URL : ' + req.url)
-  next()
-})
 
 
 app.get('/index.html', function(req, res) {
@@ -47,10 +43,10 @@ app.get('/', function(req, res) {
 });
 
 app.get('/get/clients', (req, res) => {
-  var sql = "SELECT * FROM public.\"Clients\""
+  var sql = "SELECT * FROM \"Clients\""
   pgsql.query(sql, (err, rows, fields) => {
     if (err) throw err;
-    res.send(JSON.stringify(rows))
+    response.status(200).json(results.rows)
   })
 })
 
