@@ -85,7 +85,7 @@ pgsql.connect((err) => {
 
     TestRouter.route('/')
 
-      // Récupère un membre avec ID
+      // Récupère tous les membres
       .get((req, res) => {
         pgsql.query('SELECT * FROM test', (err, result) => {
           if (err) {
@@ -94,6 +94,7 @@ pgsql.connect((err) => {
 
             if (result[0] != undefined) {
               res.json(success(result[0]))
+              response.status(200).json(result.rows)
             } else {
               res.json(error('Wrong id'))
             }
