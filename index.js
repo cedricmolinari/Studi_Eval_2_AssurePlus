@@ -43,10 +43,13 @@ app.get('/', function(req, res) {
 });
 
 app.get('/get/clients', (req, res) => {
-  var sql = "SELECT * FROM \"Clients\""
+  var sql = "SELECT * FROM \"Clients\";"
   pgsql.query(sql, (err, rows, fields) => {
-    if (err) throw err;
-    res.status(200).json(results.rows)
+    if (err) {
+      throw err;
+    } else {
+      res.status(200).json(results.rows)
+    }
   })
 })
 
