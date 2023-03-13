@@ -59,7 +59,7 @@ app.get('/get/clients', (request, response) => {
 //https.createServer(options, app).listen(443)
 app.listen(8080, () => console.log('Started on port ' + 8080))
 
-pgsql.connect((err) => {
+/* pgsql.connect((err) => {
   if (err) {
     
     console.log(err.message);
@@ -183,7 +183,7 @@ pgsql.connect((err) => {
   }
 });
 
-
+ */
 
 
 
