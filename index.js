@@ -31,6 +31,9 @@ const pgsql = new Client({
   },
 });
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.get('/index.html', function(req, res) {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
