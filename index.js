@@ -46,7 +46,7 @@ app.get('/get/clients', (req, res) => {
   var sql = "SELECT * FROM \"Clients\""
   pgsql.query(sql, (err, rows, fields) => {
     if (err) throw err;
-    response.status(200).json(results.rows)
+    res.status(200).json(results.rows)
   })
 })
 
