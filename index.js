@@ -49,6 +49,8 @@ app.get('/get/clients', (request, response) => {
 }
 )
 
+app.listen(8080, () => console.log('Started on port ' + 8080))
+
 pgsql.connect((err) => {
   if (err) {
     
@@ -168,8 +170,8 @@ pgsql.connect((err) => {
         }
       })
 
-    app.use(config.rootAPI + 'test', TestRouter)
-    app.listen(config.port, () => console.log('Started on port ' + config.port))
+    //app.use(config.rootAPI + 'test', TestRouter)
+    //app.listen(8080, () => console.log('Started on port ' + 8080))
   }
 });
 
