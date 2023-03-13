@@ -4,7 +4,6 @@ import express from 'express'
 import path from 'path'
 import morgan from 'morgan';
 import https from 'https';
-import config from './config.json' assert { type: "json" };
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -46,9 +45,14 @@ app.get('/get/clients', (request, response) => {
     }
     response.status(200).json(results.rows)
   })
-}
-)
+})
 
+app.use((req, res, next) => {
+  console.log('URL : ' + req.url)
+  next()
+})
+
+//https.createServer(options, app).listen(443)
 app.listen(8080, () => console.log('Started on port ' + 8080))
 
 pgsql.connect((err) => {
