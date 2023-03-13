@@ -46,7 +46,8 @@ app.get('/get/clients', (request, response) => {
     if (error) {
       throw error
     }
-    response.status(200).json(results.rows)
+    response.json(results)
+    //response.status(200).json(results.rows)
   })
 })
 
