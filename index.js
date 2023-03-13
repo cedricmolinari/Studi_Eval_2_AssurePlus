@@ -45,6 +45,27 @@ app.get('/', function(req, res) {
 app.get('/get/clients', (req, res) => {
   var sql = "SELECT * FROM \"Clients\";"
   pgsql.query(sql, (err, rows, fields) => {
+    if (err) 
+      throw err;
+      res.status(200).json(res.rows)
+    
+  })
+})
+
+app.get('/get/test/:id', (req, res) => {
+  var sql = "SELECT * FROM public.\"test\" WHERE id = ?;"
+  pgsql.query(sql, [req.params.id], (err, rows, fields) => {
+    if (err) {
+      throw err;
+    } else {
+      res.status(200).json(res.rows)
+    }
+  })
+})
+
+app.get('/get/test', (req, res) => {
+  var sql = "SELECT * FROM \"test\";"
+  pgsql.query(sql, (err, rows, fields) => {
     if (err) {
       throw err;
     } else {
