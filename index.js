@@ -46,13 +46,11 @@ app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.get('/get/clients', (request, response) => {
-  pgsql.query('SELECT * FROM \"Clients\"', (error, results) => {
-    if (error) {
-      throw error
-    }
-    response.json(results)
-    //response.status(200).json(results.rows)
+app.get('/get/clients', (req, res) => {
+  var sql = "SELECT * FROM public.\"Clients\""
+  pgsql.query(sql, (err, rows, fields) => {
+    if (err) throw err;
+    res.send(JSON.stringify(rows))
   })
 })
 
