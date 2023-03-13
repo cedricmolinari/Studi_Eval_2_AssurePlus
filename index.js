@@ -47,7 +47,7 @@ app.get('/', function(req, res) {
 });
 
 app.get('/get/clients', (request, response) => {
-  pgsql.query('SELECT * FROM \"clients\"', (error, results) => {
+  pgsql.query('SELECT * FROM \"Clients\"', (error, results) => {
     if (error) {
       throw error
     }
