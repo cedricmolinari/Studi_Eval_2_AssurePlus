@@ -17,6 +17,23 @@ const __dirname = dirname(__filename);
 
 const app = express()
 
+app.get('/index.html', function(req, res) {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+app.get('/', function(req, res) {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/get/clients', (request, response) => {
+  pgsql.query('SELECT * FROM clients', (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows)
+  })
+}
+)
+
 pgsql.connect((err) => {
   if (err) {
     
