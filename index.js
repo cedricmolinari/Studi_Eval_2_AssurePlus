@@ -1,7 +1,6 @@
 //import pgsql from './BDD/connexionBDD.js'
 import express from 'express'
 import path from 'path'
-import morgan from 'morgan';
 import https from 'https';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -33,58 +32,7 @@ const app = express()
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
-app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-app.get('/api/clients', (req, res) => {
-  var sql = "SELECT * FROM \"Clients\";"
-  pgsql.query(sql, (err, rows, fields) => {
-    if (err) 
-      throw err;
-      res.send(JSON.stringify(rows))
-    
-  })
-});
-
-app.get('/api/clients/:id', (req, res) => {
-  var sql = "SELECT * FROM public.\"Clients\" WHERE id = ?;"
-  pgsql.query(sql, [req.params.id], (err, rows, fields) => {
-    if (err) {
-      throw err;
-    } else {
-      res.status(200).json(res.rows)
-    }
-  })
-});
-
-app.get('/api/test', (req, res) => {
-  var sql = "SELECT * FROM \"test\";"
-  pgsql.query(sql, (err, rows, fields) => {
-    if (err) {
-      throw err;
-    } else {
-      res.send(JSON.stringify(rows))
-    }
-  })
-});
-
-app.get('/api/test/:id', (req, res) => {
-  var sql = "SELECT * FROM public.\"test\" WHERE id = ?;"
-  pgsql.query(sql, [req.params.id],(err, rows, fields) => {
-    if (err) {
-      throw err;
-    } else {
-      res.status(200).json(results.rows)
-    }
-  })
-});
-
-app.listen(8080, () => console.log('Started on port ' + 8080));
-
-
-/* const { success, error } = functions;
+const { success, error } = functions;
 
  pgsql.connect((err) => {
   if (err) {
@@ -97,21 +45,20 @@ app.listen(8080, () => console.log('Started on port ' + 8080));
 
     let TestRouter = express.Router()
 
-    app.use(morgan('dev'))
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
-    TestRouter.route('/:id')
+    TestRouter.route('/api/clients')
 
-      // Récupère un membre avec ID
+      // Récupère tous les clients
       .get((req, res) => {
-        pgsql.query('SELECT * FROM test where id = ?', [req.params.id], (err, result) => {
+        pgsql.query("SELECT * FROM \"Clients\";", (err, result) => {
           if (err) {
             res.json(error(err.message))
           } else {
 
             if (result[0] != undefined) {
-              res.json(success(result[0]))
+              res.json(success(result))
             } else {
               res.json(error('Wrong id'))
             }
@@ -205,12 +152,12 @@ app.listen(8080, () => console.log('Started on port ' + 8080));
         }
       })
 
-    //app.use(config.rootAPI + 'test', TestRouter)
-    //app.listen(8080, () => console.log('Started on port ' + 8080))
+    app.use(TestRouter)
+    app.listen(8080, () => console.log('Started on port ' + 8080))
   }
 });
 
- */
+
 
 
 
