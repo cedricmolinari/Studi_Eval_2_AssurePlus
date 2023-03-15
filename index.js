@@ -1,23 +1,14 @@
-//création du serveur localhost
 //import pgsql from './BDD/connexionBDD.js'
 import express from 'express'
 import path from 'path'
 import morgan from 'morgan';
 import https from 'https';
-
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-
-import functions from './functions.js'
-const { success, error } = functions;
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const app = express()
-
 import fs from 'fs';
 import pkg from 'pg';
+import functions from './functions.js'
+
 const { Client } = pkg;
 const pgsql = new Client({
   user: 'doadmin',
@@ -31,18 +22,18 @@ const pgsql = new Client({
   },
 });
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const app = express()
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-app.get('/index.html', function(req, res) {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.get('/get/clients', (req, res) => {
+app.get('/api/clients', (req, res) => {
   var sql = "SELECT * FROM \"Clients\";"
   pgsql.query(sql, (err, rows, fields) => {
     if (err) 
@@ -50,10 +41,10 @@ app.get('/get/clients', (req, res) => {
       res.status(200).json(res.rows)
     
   })
-})
+});
 
-app.get('/get/test/:id', (req, res) => {
-  var sql = "SELECT * FROM public.\"test\" WHERE id = ?;"
+app.get('/api/clients/:id', (req, res) => {
+  var sql = "SELECT * FROM public.\"Clients\" WHERE id = ?;"
   pgsql.query(sql, [req.params.id], (err, rows, fields) => {
     if (err) {
       throw err;
@@ -61,9 +52,9 @@ app.get('/get/test/:id', (req, res) => {
       res.status(200).json(res.rows)
     }
   })
-})
+});
 
-app.get('/get/test', (req, res) => {
+app.get('/api/test', (req, res) => {
   var sql = "SELECT * FROM \"test\";"
   pgsql.query(sql, (err, rows, fields) => {
     if (err) {
@@ -72,12 +63,25 @@ app.get('/get/test', (req, res) => {
       res.status(200).json(results.rows)
     }
   })
-})
+});
 
-//https.createServer(options, app).listen(443)
-app.listen(8080, () => console.log('Started on port ' + 8080))
+app.get('/api/test/:id', (req, res) => {
+  var sql = "SELECT * FROM public.\"test\" WHERE id = ?;"
+  pgsql.query(sql, (err, rows, fields) => {
+    if (err) {
+      throw err;
+    } else {
+      res.status(200).json(results.rows)
+    }
+  })
+});
 
-/* pgsql.connect((err) => {
+app.listen(8080, () => console.log('Started on port ' + 8080));
+
+
+/* const { success, error } = functions;
+
+ pgsql.connect((err) => {
   if (err) {
     
     console.log(err.message);
