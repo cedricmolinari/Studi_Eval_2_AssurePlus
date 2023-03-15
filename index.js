@@ -56,12 +56,7 @@ const { success, error } = functions;
           if (err) {
             res.json(error(err.message))
           } else {
-
-            if (result[0] != undefined) {
-              res.json(success(result))
-            } else {
-              res.json(error('Wrong id'))
-            }
+            res.status(200).json(result.rows)
           }
         })
       })
