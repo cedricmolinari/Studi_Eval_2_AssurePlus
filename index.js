@@ -43,7 +43,7 @@ app.get('/api/clients', (req, res) => {
   pgsql.query(sql, (err, rows, fields) => {
     if (err) 
       throw err;
-      res.status(200).json(res.rows)
+      res.send(JSON.stringify(rows))
     
   })
 });
@@ -65,7 +65,7 @@ app.get('/api/test', (req, res) => {
     if (err) {
       throw err;
     } else {
-      res.status(200).json(results.rows)
+      res.send(JSON.stringify(rows))
     }
   })
 });
