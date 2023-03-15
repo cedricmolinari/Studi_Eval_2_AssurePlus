@@ -61,6 +61,30 @@ const { success, error } = functions;
         })
       })
 
+    TestRouter.route('/api/clients/:id')
+      // Récupère un client d'après l'id
+      .get((req, res) => {
+        pgsql.query("SELECT * FROM \"Clients\" WHERE id_clt = ?;", [req.params.id], (err, result) => {
+          if (err) {
+            res.json(error(err.message))
+          } else {
+            res.status(200).json(result.rows)
+          }
+        })
+      })
+
+    TestRouter.route('/api/test')
+      // Récupère tous les tests
+      .get((req, res) => {
+        pgsql.query("SELECT * FROM \"test\";", (err, result) => {
+          if (err) {
+            res.json(error(err.message))
+          } else {
+            res.status(200).json(result.rows)
+          }
+        })
+      })
+
       // Modifie un membre avec ID
       .put((req, res) => {
         if (req.body.nom_test) {
@@ -95,23 +119,6 @@ const { success, error } = functions;
       })
 
     TestRouter.route('/')
-
-      // Récupère tous les membres
-      .get((req, res) => {
-        pgsql.query('SELECT * FROM test', (err, result) => {
-          if (err) {
-            res.json(error(err.message))
-          } else {
-
-            if (result[0] != undefined) {
-              res.json(success(result[0]))
-              response.status(200).json(result.rows)
-            } else {
-              res.json(error('Wrong id'))
-            }
-          }
-        })
-      })
 
       // Ajoute un membre avec son nom
       .post((req, res) => {
