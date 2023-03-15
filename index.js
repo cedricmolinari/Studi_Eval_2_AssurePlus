@@ -85,6 +85,18 @@ const { success, error } = functions;
         })
       })
 
+    TestRouter.route('/api/test/:id')
+      // Récupère un test d'après l'id
+      .get((req, res) => {
+        pgsql.query("SELECT * FROM \"test\" WHERE id_clt = ?;", [req.params.id], (err, result) => {
+          if (err) {
+            res.json(error(err.message))
+          } else {
+            res.status(200).json(result.rows)
+          }
+        })
+      })
+
       // Modifie un membre avec ID
       .put((req, res) => {
         if (req.body.nom_test) {
