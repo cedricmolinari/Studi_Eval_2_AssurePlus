@@ -15,11 +15,16 @@ const pgsql = new Client({
   host: 'app-27a8f32e-6c33-4e20-a7b5-f5b159af7b48-do-user-13582571-0.b.db.ondigitalocean.com',
   database: 'AssurePlus',
   password: 'AVNS_aTgfOfY41WZsV5L5Ktu',
-  //port: '25060',
+  port: '25060',
   ssl: {
     rejectUnauthorized: false,
     ca: fs.readFileSync('root.crt').toString()
   },
+});
+
+pgsql.connect(function(err) {
+  if (err) throw err;
+  console.log("Connected!");
 });
 
 const __filename = fileURLToPath(import.meta.url);
@@ -67,7 +72,7 @@ app.get('/api/test', (req, res) => {
 
 app.get('/api/test/:id', (req, res) => {
   var sql = "SELECT * FROM public.\"test\" WHERE id = ?;"
-  pgsql.query(sql, (err, rows, fields) => {
+  pgsql.query(sql, [req.params.id],(err, rows, fields) => {
     if (err) {
       throw err;
     } else {
