@@ -88,7 +88,7 @@ const { success, error } = functions;
     TestRouter.route('/api/test/:id')
       // Récupère un test d'après l'id
       .get((req, res) => {
-        pgsql.query('SELECT * FROM \"test\" WHERE id = $1;', req.params.id, (err, result) => {
+        pgsql.query('SELECT * FROM \"test\" WHERE id = $1;', [req.params.id], (err, result) => {
           if (err) {
             res.json(error(err.message))
           } else {
@@ -100,19 +100,19 @@ const { success, error } = functions;
       // Modifie un membre avec ID
       .put((req, res) => {
         if (req.body.nom_test) {
-          pgsql.query('SELECT * FROM test WHERE id = ?', [req.params.id], (err, result) => {
+          pgsql.query('SELECT * FROM \"test\" WHERE id = $1', [req.params.id], (err, result) => {
             if (err) {
               res.json(error(err.message))
             } else {
               if (result[0] != undefined) {
-                pgsql.query('SELECT * FROM test WHERE nom_test = ? AND id != ?', [req.body.nom_test, req.params.id], (err, result) => {
+                pgsql.query('SELECT * FROM \"test\" WHERE nom_test = $1 AND id != $2', [req.body.nom_test, req.params.id], (err, result) => {
                   if (err) {
                     res.json(error(err.message))
                   } else {
                     if (result[0] != undefined) {
                       res.json(error('same name'))
                     } else {
-                      pgsql.query('UPDATE test SET nom_test = ? WHERE id = ?', [req.body.nom_test, req.params.id], (err, result) => {
+                      pgsql.query('UPDATE \"test\" SET nom_test = $1 WHERE id = $2', [req.body.nom_test, req.params.id], (err, result) => {
                         if (err) {
                           res.json(error(err.message))
                         } else {
