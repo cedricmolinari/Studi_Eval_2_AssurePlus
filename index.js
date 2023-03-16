@@ -99,7 +99,6 @@ const { success, error } = functions;
 
       // Modifie un membre avec ID
       .put((req, res) => {
-        if (req.body.nom_test) {
           pgsql.query('update "test" set nom_test = $1 where id = $2;', [req.body.nom_test, req.params.id], (err, result) => {
             if (err) {
               res.json(error(err.message))
@@ -107,7 +106,6 @@ const { success, error } = functions;
               res.json(success(true))
             }
           })
-        }
       })
 
     TestRouter.route('/')
