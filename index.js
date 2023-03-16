@@ -103,7 +103,7 @@ const { success, error } = functions;
             if (err) {
               res.json(error(err.message))
             } else {         
-              res.status(200).json(result.rows)
+              res.status(200).json({"message":"Modification effectuée !"})
             }
           })
       })
