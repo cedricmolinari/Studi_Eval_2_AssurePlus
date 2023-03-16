@@ -61,7 +61,7 @@ const { success, error } = functions;
         })
       })
 
-    TestRouter.route('/api/clients/:id')
+    /* TestRouter.route('/api/clients/:id')
       // Récupère un client d'après l'id
       .get((req, res) => {
         pgsql.query("SELECT * FROM \"Clients\" WHERE id_clt = ?;", [req.params.id], (err, result) => {
@@ -71,7 +71,7 @@ const { success, error } = functions;
             res.status(200).json(result.rows)
           }
         })
-      })
+      }) */
 
     TestRouter.route('/api/test')
       // Récupère tous les tests
