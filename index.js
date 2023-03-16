@@ -88,7 +88,7 @@ const { success, error } = functions;
     TestRouter.route('/api/test/:id')
       // Récupère un test d'après l'id
       .get((req, res) => {
-        pgsql.query("SELECT * FROM \"test\" WHERE id = ?;", [req.params.id], (err, result) => {
+        pgsql.query('SELECT * FROM \"test\" WHERE id = ?;', [req.params.id], (err, result) => {
           if (err) {
             res.json(error(err.message))
           } else {
