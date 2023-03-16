@@ -61,17 +61,17 @@ const { success, error } = functions;
         })
       })
 
-    /* TestRouter.route('/api/clients/:id')
+    TestRouter.route('/api/clients/:id')
       // Récupère un client d'après l'id
       .get((req, res) => {
-        pgsql.query("SELECT * FROM \"Clients\" WHERE id_clt = ?;", [req.params.id], (err, result) => {
+        pgsql.query('SELECT * FROM \"Clients\" WHERE id_clt = ?;', [req.params.id], (err, result) => {
           if (err) {
             res.json(error(err.message))
           } else {
             res.status(200).json(result.rows)
           }
         })
-      }) */
+      })
 
     TestRouter.route('/api/test')
       // Récupère tous les tests
@@ -88,7 +88,7 @@ const { success, error } = functions;
     TestRouter.route('/api/test/:id')
       // Récupère un test d'après l'id
       .get((req, res) => {
-        pgsql.query('SELECT * FROM \"test\" WHERE id = ?;', [req.params.id], (err, result) => {
+        pgsql.query('SELECT * FROM \"test\" WHERE id = ?;', req.params.id, (err, result) => {
           if (err) {
             res.json(error(err.message))
           } else {
