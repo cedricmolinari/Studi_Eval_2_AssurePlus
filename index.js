@@ -103,7 +103,10 @@ const { success, error } = functions;
             if (err) {
               res.json(error(err.message))
             } else {         
-              res.json(success(true))
+              res.json(success({
+                id: result[0].id,
+                nom_test: result[0].nom_test
+              }))
             }
           })
       })
