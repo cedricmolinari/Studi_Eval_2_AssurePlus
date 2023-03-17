@@ -48,6 +48,13 @@ const { success, error } = functions;
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
+    TestRouter.route('/')
+
+      //affiche la page d'accueil
+      .get((req, res) => {
+        res.sendFile(__dirname + "/index.html");
+      });
+
     TestRouter.route('/api/clients')
 
       // Récupère tous les clients
@@ -145,7 +152,7 @@ const { success, error } = functions;
       })
 
     app.use(TestRouter)
-    app.listen(8080, () => console.log('Started on port ' + 8080))
+    app.listen(8080, 'localhost', () => console.log('Started on port ' + 8080))
   }
 });
 
