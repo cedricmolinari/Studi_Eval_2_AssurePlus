@@ -108,7 +108,7 @@ const { success, error } = functions;
           })
       })
 
-    TestRouter.route('/')
+    TestRouter.route('/api/test/')
 
       // Ajoute un membre avec son nom
       .post((req, res) => {
@@ -118,7 +118,7 @@ const { success, error } = functions;
               res.json(error(err.message))
             } else {
               if (result[0] != undefined) {
-                res.status(204).json({"message":"name already taken"})
+                res.send({"message":"name already taken"})
               } else {
                 pgsql.query('INSERT INTO test(nom_test) VALUES($1)', [req.body.nom_test], (err, result) => {
                   if (err) {
@@ -128,10 +128,10 @@ const { success, error } = functions;
                       if (err) {
                         res.json(error(err.message))
                       } else {
-                        res.json(success({
+                        res.send({
                           id: result[0].id,
                           nom_test: result[0].nom_test
-                        }))
+                        })
                       }
                     })
                   }
