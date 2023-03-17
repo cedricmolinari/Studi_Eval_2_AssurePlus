@@ -120,7 +120,7 @@ const { success, error } = functions;
               if (result[0] != undefined) {
                 res.status(204).json({"message":"name already taken"})
               } else {
-                pgsql.query('INSERT INTO test(nom_test) VALUES(?)', [req.body.nom_test], (err, result) => {
+                pgsql.query('INSERT INTO test(nom_test) VALUES($1)', [req.body.nom_test], (err, result) => {
                   if (err) {
                     res.json(error(err.message))
                   } else {
