@@ -30,7 +30,7 @@ let inscriptionForm = document.querySelector('.form');
 })
 */
 
-fetch('../index.js/clients/2', {
+fetch('../app.js', {
   method: 'GET', // or 'PUT'
   headers: {
       'Content-Type': 'application/json'

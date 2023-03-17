@@ -1,4 +1,3 @@
-//import pgsql from './BDD/connexionBDD.js'
 import express from 'express'
 import path from 'path'
 import https from 'https';
@@ -6,7 +5,6 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import fs from 'fs';
 import pkg from 'pg';
-import functions from './functions.js'
 
 const { Client } = pkg;
 const pgsql = new Client({
@@ -32,7 +30,7 @@ const app = express()
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const { success, error } = functions;
+import { success, error } from './functions.js';
 
  pgsql.connect((err) => {
   if (err) {
@@ -52,7 +50,7 @@ const { success, error } = functions;
 
       //affiche la page d'accueil
       .get((req, res) => {
-        res.sendFile(__dirname + "/index.html");
+        res.sendFile(__dirname + "./Accueil/accueil.html");
       });
 
     TestRouter.route('/api/clients')
@@ -63,7 +61,7 @@ const { success, error } = functions;
           if (err) {
             res.json(error(err.message))
           } else {
-            res.status(200).json(result.rows)
+            res.json(result.rows)
           }
         })
       })
@@ -108,7 +106,7 @@ const { success, error } = functions;
       .put((req, res) => {
           pgsql.query('update "test" set nom_test = $1 where id = $2;', [req.body.nom_test, req.params.id], (err, result) => {
             if (err) {
-              res.json(error(err.message))
+              res.json(functions.error(err.message))
             } else {         
               res.status(200).json({"message":"Modification effectuée !"})
             }
@@ -124,21 +122,21 @@ const { success, error } = functions;
             if (err) {
               res.json(error(err.message))
             } else {
-              if (result[0] != undefined) {
+              if (result.rows[0] != undefined) {
                 res.send({"message":"name already taken"})
               } else {
                 pgsql.query('INSERT INTO test(nom_test) VALUES($1)', [req.body.nom_test], (err, result) => {
                   if (err) {
                     res.json(error(err.message))
                   } else {
-                    pgsql.query('SELECT * FROM test WHERE nom_test = $1', [req.body.nom_test], (err, result) => {
+                    pgsql.query('SELECT * FROM "test" WHERE nom_test = $1', [req.body.nom_test], (err, result) => {
                       if (err) {
                         res.json(error(err.message))
                       } else {
-                        res.send({
-                          id: result[0].id,
-                          nom_test: result[0].nom_test
-                        })
+                        res.json(success(
+                          {id: result.rows[0].id,
+                          name: result.rows[0].nom_test}
+                        ))
                       }
                     })
                   }
@@ -147,27 +145,14 @@ const { success, error } = functions;
             }
           })
         } else {
-          res.status(204).json({"message":"no name value"})
+          res.status(200).json({"message":"no name value"})
         }
       })
 
     app.use(TestRouter)
-    app.listen(8080, 'localhost', () => console.log('Started on port ' + 8080))
+    app.listen(3000, 'localhost', () => console.log('Started on port ' + 3000))
   }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* app.use((req, res, next) => {
   console.log('URL : ' + req.url)

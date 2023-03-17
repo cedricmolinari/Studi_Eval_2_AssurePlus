@@ -1,4 +1,4 @@
-export default function success(result) {
+export function success(result) {
     return {
         status: 'success',
         result: result
