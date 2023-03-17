@@ -113,18 +113,18 @@ const { success, error } = functions;
       // Ajoute un membre avec son nom
       .post((req, res) => {
         if (req.body.nom_test) {
-          pgsql.query('SELECT * FROM test WHERE nom_test = ?', [req.body.nom_test], (err, result) => {
+          pgsql.query('SELECT * FROM "test" WHERE nom_test = $1', [req.body.nom_test], (err, result) => {
             if (err) {
               res.json(error(err.message))
             } else {
               if (result[0] != undefined) {
-                res.json(error('name already taken'))
+                res.status(204).json({"message":"name already taken"})
               } else {
                 pgsql.query('INSERT INTO test(nom_test) VALUES(?)', [req.body.nom_test], (err, result) => {
                   if (err) {
                     res.json(error(err.message))
                   } else {
-                    pgsql.query('SELECT * FROM test WHERE nom_test = ?', [req.body.nom_test], (err, result) => {
+                    pgsql.query('SELECT * FROM test WHERE nom_test = $1', [req.body.nom_test], (err, result) => {
                       if (err) {
                         res.json(error(err.message))
                       } else {
@@ -140,7 +140,7 @@ const { success, error } = functions;
             }
           })
         } else {
-          res.json(error('no name value'))
+          res.status(204).json({"message":"no name value"})
         }
       })
 
