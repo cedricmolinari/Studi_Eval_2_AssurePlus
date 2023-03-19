@@ -6,6 +6,9 @@ import { dirname } from 'path';
 import fs from 'fs';
 import pkg from 'pg';
 
+// installer les librairies jsonwebtoken et express-jwt dans le projet pour gérer les accès à l'API en fonction du profil utilisateur
+// cours STUDI/Accueil/Médiathèque/Développement d'une solution digitale avec Java/Concevoir une API/Gérer les accès à une API
+
 const { Client } = pkg;
 const pgsql = new Client({
   user: 'doadmin',
@@ -29,6 +32,7 @@ const __dirname = dirname(__filename);
 const app = express()
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(__dirname));
 
 import { success, error } from './functions.js';
 
@@ -50,8 +54,28 @@ import { success, error } from './functions.js';
 
       //affiche la page d'accueil
       .get((req, res) => {
-        res.sendFile(__dirname + "./Accueil/accueil.html");
+        res.sendFile(__dirname + "/Accueil/accueil.html");
       });
+    
+    TestRouter.route('/Accueil/accueil.html')
+
+      //affiche la page d'accueil
+      .get((req, res) => {
+        res.sendFile(__dirname + "/Accueil/accueil.html");
+      });
+    
+    TestRouter.route('/Inscription/inscription.html')
+      //affiche la page d'inscription
+      .get((req, res) => {
+        res.sendFile(__dirname + "/Inscription/inscription.html");
+      });
+
+    TestRouter.route('/Connexion/connexion.html')
+      //affiche la page de connexion
+      .get((req, res) => {
+        res.sendFile(__dirname + "/Connexion/connexion.html");
+      });
+      
 
     TestRouter.route('/api/clients')
 

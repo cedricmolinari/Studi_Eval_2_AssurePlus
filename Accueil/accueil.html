@@ -3,20 +3,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link href="accueil.css" type="text/css" rel="stylesheet" />
+    <!-- <link href="accueil.css" type="text/css" rel="stylesheet" /> -->
 </head>
 <body>
     <h1>Accueil</h1>
-    <form action="/" method="post" class="form">
+    <form class="getResultats">
         <div>
-            <label for="name">Nom :</label>
-            <input type="text" name="name">
+            <button type="submit">Afficher la requête</button>
+        </div>
+    </form>
+    <form method="post" class="form">
+        <div>
+            <label for="nom_test">Nom :</label>
+            <input type="text" name="nom_test">
         </div>
         <button type="submit">Inscription</button>
     </form>
-    <a href="./Inscription/inscription.html">Inscription</a>
-    <a href="./Connexion/connexion.html">Connexion</a>
+    <a href="/Inscription/inscription.html">Inscription</a>
+    <a href="/Connexion/connexion.html">Connexion</a>
     <button type="submit">Mot de passe oublié ?</button>
-    <script type="application/json" src="accueil.js"></script>
+    <script type="text/javascript" src="/Accueil/accueil.js"></script>
 </body>
 </html>
