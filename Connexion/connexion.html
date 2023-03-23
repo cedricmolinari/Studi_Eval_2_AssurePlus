@@ -6,17 +6,20 @@
 </head>
 <body>
     <h1>Connexion</h1>
-    <form>
-        <div>
-            <label for="numclient">Numéro client :</label>
-            <input type="text" id="numclient">
+    <form method="get" class="connectionForm" action="/Sinistre/sinistre.html">
+        <div id="c1">
+            <label for="num_clt">Numéro client :</label>
+            <input type="text" id="num_clt" class="numClt" onblur="getVal()">
         </div>
-        <div>
-            <label for="motdepasse">Mot de passe :</label>
-            <input type="password" id="motdepasse">
+        <div id="c2">
+            <label for="mdp_clt">Mot de passe :</label>
+            <input type="password" id="mdp_clt" class="pwClt" onblur="getVal()">
         </div>
+        <!-- <button type="submit">Mot de passe oublié ?</button> -->
+        <button type="submit" id="btnConnexion";>Connexion</button>
     </form>
-    <button type="submit">Connexion</button>
     <a href="/Accueil/accueil.html">Retour</a>
+
+    <script type="text/javascript" src="/Connexion/connexion.js"></script>
 </body>
 </html>

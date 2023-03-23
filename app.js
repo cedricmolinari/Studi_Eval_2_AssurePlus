@@ -101,6 +101,19 @@ import { success, error } from './functions.js';
           }
         })
       })
+    
+    TestRouter.route('/api/clients/num/:num_clt')
+      // Récupère un client d'après le numéro client
+      .get((req, res) => {
+        
+        pgsql.query('SELECT * FROM \"Clients\" WHERE num_clt = $1;', [parseInt(req.params.num_clt)], (err, result) => {
+          if (err) {
+            res.json(error(err.message))
+          } else {
+            res.status(200).json(result.rows)
+          }
+        })
+      })
 
     TestRouter.route('/api/test')
       // Récupère tous les tests

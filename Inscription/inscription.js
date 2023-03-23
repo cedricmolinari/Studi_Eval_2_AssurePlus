@@ -7,6 +7,8 @@ let inputNumerotel = document.querySelector('#numerotel').value; */
 let btnValinscription = document.querySelector('#valinscription');
 let inscriptionForm = document.querySelector('.form');
 
+//mettre en place un hash/salt du mdp quand on le crée en database : https://www.makeuseof.com/nodejs-bcrypt-hash-verify-salt-password/
+
 /* inscriptionForm.addEventListener('submit', event => {
     event.preventDefault();
     const formData = new FormData(inscriptionForm);
