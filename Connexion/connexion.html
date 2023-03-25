@@ -9,11 +9,14 @@
     <form method="get" class="connectionForm" action="/Sinistre/sinistre.html">
         <div id="c1">
             <label for="num_clt">Numéro client :</label>
-            <input type="text" id="num_clt" class="numClt" onblur="getVal()">
+            <input type="text" id="num_clt" class="numClt" onblur="getVal()" required>
         </div>
         <div id="c2">
             <label for="mdp_clt">Mot de passe :</label>
-            <input type="password" id="mdp_clt" class="pwClt" onblur="getVal()">
+            <input type="password" id="mdp_clt" class="pwClt" onblur="getVal()" required>
+        </div>
+        <div id="new">
+
         </div>
         <!-- <button type="submit">Mot de passe oublié ?</button> -->
         <button type="submit" id="btnConnexion";>Connexion</button>

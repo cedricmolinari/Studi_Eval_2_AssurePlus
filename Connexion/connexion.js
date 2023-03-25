@@ -5,7 +5,7 @@ let inputPwClt = document.querySelector('.pwClt')
 
 let connexion = false
 
-// retourne la valeur du champ num_clt
+// retourne la valeur d'un champ input'
 function getVal(input) {
     const val = input.value;
     return val;
@@ -27,16 +27,34 @@ submitConnectForm.addEventListener('submit', event => {
             return response.json()
         })
         .then((function(json) {
-            //console.log(json[0])
             if (json[0] === undefined) {
-                console.log('client inexistant');
                 connexion = false
+
+                // ajout d'un message dans le DOM pour signaler le problème
+                if (document.getElementById('erreurConnexion') == undefined) {
+                    var elementP = document.createElement("p");
+                    var message = document.createTextNode("Combinaison client et mot de passe inexistante");
+                    elementP.appendChild(message);
+                    elementP.setAttribute("id", "erreurConnexion")
+                    var element = document.getElementById("new");
+                    element.appendChild(elementP);
+                }
                 
             } else if (json[0].mdp_clt === getVal(inputPwClt)) {
                 console.log('client trouvé !');
                 connexion = true
             } else {
                 console.log('Mdp incorrect');
+
+                // ajout d'un message dans le DOM pour signaler le problème
+                if (document.getElementById('erreurConnexion') == undefined) {
+                    var elementP = document.createElement("p");
+                    var message = document.createTextNode("Combinaison client et mot de passe inexistante");
+                    elementP.appendChild(message);
+                    elementP.setAttribute("id", "erreurConnexion")
+                    var element = document.getElementById("new");
+                    element.appendChild(elementP);
+                }
             }
         }))
 

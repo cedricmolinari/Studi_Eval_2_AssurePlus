@@ -6,42 +6,45 @@
 </head>
 <body>
     <h1>Inscription</h1>
-    <form method = "post" class="form">
+    <form class="form">
         <div>
             <label for="num_clt">Numéro client :</label>
-            <input type="text" name="num_clt">
+            <input type="text" name="num_clt" required>
         </div>
         <div>
-            <label for="motdepasse">Mot de passe :</label>
-            <input type="password" name="motdepasse">
+            <label for="mdp_clt">Mot de passe :</label>
+            <input type="password" name="mdp_clt" id="motdepasse" required onblur="getVal()">
+        </div>
+        <div id="logConditions">
+            <p>Le mot de passe doit contenir au moins 6 caractères, dont une majuscule, un chiffre et un caractère spécial</p>
         </div>
         <div>
-            <label for="nom">Nom :</label>
-            <input type="text" name="nom">
+            <label for="nom_clt">Nom :</label>
+            <input type="text" name="nom_clt" required>
         </div>
         <div>
-            <label for="prenom">Prénom :</label>
-            <input type="text" name="prenom">
+            <label for="prenom_clt">Prénom :</label>
+            <input type="text" name="prenom_clt" required>
         </div>
         <div>
-            <label for="rue">Rue :</label>
-            <input type="text" name="rue">
+            <label for="rue_clt">Rue :</label>
+            <input type="text" name="rue_clt" required>
         </div>
         <div>
-            <label for="ville">Ville :</label>
-            <input type="text" name="ville">
+            <label for="ville_clt">Ville :</label>
+            <input type="text" name="ville_clt" required>
         </div>
         <div>
-            <label for="cp">Code postal :</label>
-            <input type="text" name="cp">
+            <label for="cp_clt">Code postal :</label>
+            <input type="text" name="cp_clt" required>
         </div>
         <div>
-            <label for="email">Email :</label>
-            <input type="mail" name="email">
+            <label for="mail_clt">Email :</label>
+            <input type="mail" name="mail_clt" required>
         </div>
         <div>
-            <label for="numerotelephone">Numéro de téléphone :</label>
-            <input type="tel" name="numerotel">
+            <label for="tel_clt">Numéro de téléphone :</label>
+            <input type="tel" name="tel_clt" required>
         </div>
         <button type="submit">Inscription</button>
     </form>

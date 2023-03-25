@@ -90,6 +90,19 @@ import { success, error } from './functions.js';
         })
       })
 
+      // création d'un client
+      .post((req, res) => {
+        let clt = req.body;
+        var sql = "insert into \"Clients\"(num_clt, mdp_clt, nom_clt, prenom_clt, rue_clt, ville_clt, cp_clt, mail_clt, tel_clt) \
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9);";
+        pgsql.query(sql, [req.body.num_clt, req.body.mdp_clt, req.body.nom_clt, req.body.prenom_clt, req.body.rue_clt, req.body.ville_clt, req.body.cp_clt, req.body.mail_clt, req.body.tel_clt], (err, rows, fields) => {
+          if (!err)
+          res.status(200).json(res.rows)
+          else
+          console.log(err);
+        })
+        });
+
     TestRouter.route('/api/clients/:id')
       // Récupère un client d'après l'id
       .get((req, res) => {
@@ -115,6 +128,10 @@ import { success, error } from './functions.js';
         })
       })
 
+    TestRouter.route('/api/clients')
+    
+
+ 
     TestRouter.route('/api/test')
       // Récupère tous les tests
       .get((req, res) => {
