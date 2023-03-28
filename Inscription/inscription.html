@@ -7,44 +7,44 @@
 <body>
     <h1>Inscription</h1>
     <form class="form">
-        <div>
+        <div id="divNumClt">
             <label for="num_clt">Numéro client :</label>
-            <input type="text" name="num_clt" required>
+            <input type="text" name="num_clt" id="numClt" required onblur="getVal()">
         </div>
-        <div>
+        <div id="divMdpClt">
             <label for="mdp_clt">Mot de passe :</label>
-            <input type="password" name="mdp_clt" id="motdepasse" required onblur="getVal()">
+            <input type="password" name="mdp_clt" id="mdpClt" required onblur="getVal()">
         </div>
         <div id="logConditions">
             <p>Le mot de passe doit contenir au moins 6 caractères, dont une majuscule, un chiffre et un caractère spécial</p>
         </div>
-        <div>
+        <div id="divNomClt">
             <label for="nom_clt">Nom :</label>
-            <input type="text" name="nom_clt" required>
+            <input type="text" name="nom_clt" id="nomClt" required>
         </div>
-        <div>
+        <div id="divPrenomClt">
             <label for="prenom_clt">Prénom :</label>
-            <input type="text" name="prenom_clt" required>
+            <input type="text" name="prenom_clt" id="prenomClt" required>
         </div>
-        <div>
+        <div id="divRueClt">
             <label for="rue_clt">Rue :</label>
-            <input type="text" name="rue_clt" required>
+            <input type="text" name="rue_clt" id="rueClt" required>
         </div>
-        <div>
+        <div id="divVilleClt">
             <label for="ville_clt">Ville :</label>
-            <input type="text" name="ville_clt" required>
+            <input type="text" name="ville_clt" id="villeClt" required>
         </div>
-        <div>
+        <div id="divCPClt">
             <label for="cp_clt">Code postal :</label>
-            <input type="text" name="cp_clt" required>
+            <input type="text" name="cp_clt" minlength="5" maxlength="5" id="CPClt" required onblur="getVal()">
         </div>
-        <div>
+        <div id="divMailClt">
             <label for="mail_clt">Email :</label>
-            <input type="mail" name="mail_clt" required>
+            <input type="mail" name="mail_clt" id="mailClt" required onblur="getVal()">
         </div>
-        <div>
+        <div id="divTelClt">
             <label for="tel_clt">Numéro de téléphone :</label>
-            <input type="tel" name="tel_clt" required>
+            <input type="tel" name="tel_clt" id="telClt" required>
         </div>
         <button type="submit">Inscription</button>
     </form>
