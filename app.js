@@ -5,17 +5,19 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import fs from 'fs';
 import pkg from 'pg';
-
+import * as dotenv from 'dotenv';
+dotenv.config()
+console.log(process.env.user);
 // installer les librairies jsonwebtoken et express-jwt dans le projet pour gérer les accès à l'API en fonction du profil utilisateur
 // cours STUDI/Accueil/Médiathèque/Développement d'une solution digitale avec Java/Concevoir une API/Gérer les accès à une API
 
 const { Client } = pkg;
 const pgsql = new Client({
-  user: 'doadmin',
-  host: 'app-27a8f32e-6c33-4e20-a7b5-f5b159af7b48-do-user-13582571-0.b.db.ondigitalocean.com',
-  database: 'AssurePlus',
-  password: 'AVNS_aTgfOfY41WZsV5L5Ktu',
-  port: '25060',
+  user: process.env.user,
+  host: process.env.host,
+  database: process.env.database,
+  password: process.env.password,
+  port: process.env.port,
   ssl: {
     rejectUnauthorized: false,
     ca: fs.readFileSync('root.crt').toString()
