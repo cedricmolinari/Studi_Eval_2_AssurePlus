@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Connexion</h1>
-    <form method="get" class="connectionForm" action="/Sinistre/sinistre.html">
+    <form class="connectionForm">
         <div id="c1">
             <label for="num_clt">Numéro client :</label>
             <input type="text" id="num_clt" class="numClt" onblur="getVal()" required>
@@ -22,7 +22,9 @@
         <button type="submit" id="btnConnexion";>Connexion</button>
     </form>
     <a href="/Accueil/accueil.html">Retour</a>
-
-    <script type="text/javascript" src="/Connexion/connexion.js"></script>
+    <script type="module" src="/Connexion/connexion.js"></script>
+    <script type="module" src="../node_modules/sha256/lib/sha256.js"></script>
+    <script type="module" src="../node_modules/js-base64/base64.js"></script>
+    <!-- <script type="text/javascript" src="/Connexion/connexion.js"></script> -->
 </body>
 </html>

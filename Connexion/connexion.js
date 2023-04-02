@@ -1,3 +1,4 @@
+import { decryptPassword } from './decryptPassword.js';
 let submitConnectForm = document.querySelector('.connectionForm');
 let btnConnexion = document.getElementById('btnConnexion')
 let inputTxtNumClt = document.querySelector('.numClt')
@@ -20,18 +21,21 @@ submitConnectForm.addEventListener('submit', event => {
         method: 'GET', // or 'PUT'
         headers: {
             'Content-Type': 'application/json'
-        },
+        }
         })
         .then(function(response) {
             
             return response.json()
         })
         .then((function(json) {
-            if (json[0] === undefined) {
+            const obj = JSON.parse(json.result.mdp_clt);
+            console.log(obj);
+            if (json.result === undefined) {
                 connexion = false
 
                 // ajout d'un message dans le DOM pour signaler le problème
                 if (document.getElementById('erreurConnexion') == undefined) {
+                    console.log(json);
                     var elementP = document.createElement("p");
                     var message = document.createTextNode("Combinaison client et mot de passe inexistante");
                     elementP.appendChild(message);
@@ -40,12 +44,13 @@ submitConnectForm.addEventListener('submit', event => {
                     element.appendChild(elementP);
                 }
                 
-            } else if (json[0].mdp_clt === getVal(inputPwClt)) {
+            } else if (json.result.mdp_clt === getVal(inputPwClt)) {
                 console.log('client trouvé !');
+                console.log(json);
                 connexion = true
             } else {
                 console.log('Mdp incorrect');
-
+                console.log(json);
                 // ajout d'un message dans le DOM pour signaler le problème
                 if (document.getElementById('erreurConnexion') == undefined) {
                     var elementP = document.createElement("p");
@@ -60,8 +65,8 @@ submitConnectForm.addEventListener('submit', event => {
 
         .then((function(json) {
             if (connexion) {
-                btnConnexion.setAttribute("onclick", "location.href = 'http://localhost:3000/Sinistre/sinistre.html'");
-                submitConnectForm.submit();
+                //btnConnexion.setAttribute("onclick", "location.href = 'http://localhost:3000/Sinistre/sinistre.html'");
+                //submitConnectForm.submit();
             } else {
                 btnConnexion.removeAttribute("onclick")
             }
