@@ -6,25 +6,22 @@
 </head>
 <body>
     <h1>Connexion</h1>
-    <form class="connectionForm">
+    <form class="connectionForm" action="/Sinistre/sinistre.html">
         <div id="c1">
             <label for="num_clt">Numéro client :</label>
-            <input type="text" id="num_clt" class="numClt" onblur="getVal()" required>
+            <input type="text" name="num_clt" class="numClt" onblur="getVal()" required>
         </div>
         <div id="c2">
             <label for="mdp_clt">Mot de passe :</label>
-            <input type="password" id="mdp_clt" class="pwClt" onblur="getVal()" required>
+            <input type="password" name="mdp_clt" class="pwClt" onblur="getVal()" required>
         </div>
         <div id="new">
 
         </div>
         <!-- <button type="submit">Mot de passe oublié ?</button> -->
-        <button type="submit" id="btnConnexion";>Connexion</button>
+        <button type="submit" id="btnConnexion">Connexion</button>
     </form>
     <a href="/Accueil/accueil.html">Retour</a>
     <script type="module" src="/Connexion/connexion.js"></script>
-    <script type="module" src="../node_modules/sha256/lib/sha256.js"></script>
-    <script type="module" src="../node_modules/js-base64/base64.js"></script>
-    <!-- <script type="text/javascript" src="/Connexion/connexion.js"></script> -->
 </body>
 </html>

@@ -5,12 +5,14 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import fs from 'fs';
 import pkg from 'pg';
-import { encryptPassword } from './encryptPassword.js';
 import * as dotenv from 'dotenv';
+import { encryptPassword } from './encryptPassword.js';
+import { decryptPassword } from './decryptPassword.js';
 dotenv.config()
 console.log(process.env.user);
 // installer les librairies jsonwebtoken et express-jwt dans le projet pour gérer les accès à l'API en fonction du profil utilisateur
 // cours STUDI/Accueil/Médiathèque/Développement d'une solution digitale avec Java/Concevoir une API/Gérer les accès à une API
+
 
 const { Client } = pkg;
 const pgsql = new Client({
@@ -78,6 +80,12 @@ import { success, error } from './functions.js';
       .get((req, res) => {
         res.sendFile(__dirname + "/Connexion/connexion.html");
       });
+    
+    TestRouter.route('/Sinistre/sinistre.html')
+    //affiche la page de connexion
+    .get((req, res) => {
+      res.sendFile(__dirname + "/Sinistre/sinistre.html");
+    });
       
 
     TestRouter.route('/api/clients')
@@ -102,22 +110,29 @@ import { success, error } from './functions.js';
                     if (result.rows[0] != undefined) {
                         res.json(error('Numéro client et/ou adresse mail déjà enregistrée, merci de vous connecter'))
                     } else {
-                        var sql = 'INSERT INTO "Clients"(num_clt, mdp_clt, nom_clt, prenom_clt, rue_clt, ville_clt, cp_clt, mail_clt, tel_clt) \
-                        SELECT $1::VARCHAR, $2, $3, $4, $5, $6, $7, $8, $9 \
-                        WHERE (NOT EXISTS (SELECT * FROM "Clients" WHERE mail_clt = $8) AND NOT EXISTS (SELECT * FROM "Clients" WHERE num_clt = $1));';
-                        pgsql.query(sql, [req.body.num_clt, encryptPassword(req.body.mdp_clt), req.body.nom_clt, req.body.prenom_clt, req.body.rue_clt, req.body.ville_clt, req.body.cp_clt, req.body.mail_clt, req.body.tel_clt], (err, result, fields) => {
-                            if (err) {
-                                res.json(error(err.message))
-                            } else {
-                                pgsql.query('SELECT * FROM "Clients" WHERE num_clt = $1', [req.body.num_clt], (err, result) => {
-                                    if (err) {
-                                        res.json(error(err.message))
-                                    } else {
-                                        if (result.rows[0] != undefined) {
-                                            res.json(success('Inscription réussie, vous pouvez maintenant vous connecter'))
+                      pgsql.query('SELECT * FROM "Clients" WHERE num_clt = $1', [req.body.num_clt], (err, result) => {
+                        if (err) {
+                            res.json(error(err.message))
+                        } else {
+                            
+                            var sql = 'INSERT INTO "Clients"(num_clt, mdp_clt, nom_clt, prenom_clt, rue_clt, ville_clt, cp_clt, mail_clt, tel_clt) \
+                            SELECT $1::VARCHAR, $2, $3, $4, $5, $6, $7, $8, $9 \
+                            WHERE (NOT EXISTS (SELECT * FROM "Clients" WHERE mail_clt = $8) AND NOT EXISTS (SELECT * FROM "Clients" WHERE num_clt = $1));';
+                            pgsql.query(sql, [req.body.num_clt, encryptPassword(req.body.mdp_clt), req.body.nom_clt, req.body.prenom_clt, req.body.rue_clt, req.body.ville_clt, req.body.cp_clt, req.body.mail_clt, req.body.tel_clt], (err, result, fields) => {
+                                if (err) {
+                                    res.json(error(err.message))
+                                } else {
+                                    pgsql.query('SELECT * FROM "Clients" WHERE num_clt = $1', [req.body.num_clt], (err, result) => {
+                                        if (err) {
+                                            res.json(error(err.message))
+                                        } else {
+                                            if (result.rows[0] != undefined) {
+                                                res.json(success('Inscription réussie, vous pouvez maintenant vous connecter'))
+                                            }
                                         }
-                                    }
-                                })
+                                    })
+                                }
+                              })
                             }
                         })
                     }
@@ -140,29 +155,45 @@ import { success, error } from './functions.js';
     TestRouter.route('/api/clients/num/:num_clt')
       // Récupère un client d'après le numéro client
       .get((req, res) => {
-        let mdp_clt = 'mdp_clt'
-        // SELECT CONCAT(mdp_clt::json->'token', mdp_clt::json->'salt', mdp_clt::json->'hash') FROM "Clients" where num_clt = '001';
-        pgsql.query(`SELECT num_clt, ${mdp_clt} FROM \"Clients\" WHERE num_clt = $1;`, [req.params.num_clt], (err, result) => {
+        pgsql.query(`SELECT num_clt, mdp_clt FROM \"Clients\" WHERE num_clt = $1;`, [req.params.num_clt], (err, result) => {
           if (err) {
             res.json(error(err.message))
           } else {
             const json = result.rows[0].mdp_clt;
             const obj = JSON.parse(json);
-
             console.log(obj);
-            res.json(success(
+
+            /* res.json(success(
               {num_clt: result.rows[0].num_clt,
-              mdp_clt: result.rows[0].mdp_clt}));
+              mdp_clt: result.rows[0].mdp_clt})); */
+
               /* '{"token":"u7PtZuv0hyWYyUzE","salt":"ui-FoSZDG_uXAiE1","hash":"832cac5f95fa7aefb68454b660bbc05b0302c744f12b043e70d3a00b2ec40f17"}' */
-              /* res.json(success(
+              res.json(success(
                 {num_clt: result.rows[0].num_clt,
-                mdp_clt: decryptPassword(obj, 'Plouf@54150?')})); */
+                mdp_clt: decryptPassword(obj, 'Plouf@54150?')}));
           }
         })
       })
 
-    TestRouter.route('/api/clients')
-    
+    TestRouter.route('/api/clients/num/')
+      //compare le hash du mdp saisi lors d'une connexion d'un client
+      .post((req, res) => {
+        
+        pgsql.query(`SELECT num_clt, mdp_clt FROM \"Clients\" WHERE num_clt = $1;`, [req.body.num_clt], (err, result) => {
+          const json = result.rows[0].mdp_clt;
+          const obj = JSON.parse(json);
+          console.log(obj);
+          
+          console.log(decryptPassword(obj, req.body.mdp_clt))
+          if (err) {
+            res.json(error(err.message))
+          } else {
+            //console.log(result);
+            res.status(200).json(success(
+              {num_clt: result.rows[0].num_clt,
+                mdp_clt : decryptPassword(obj, req.body.mdp_clt)}));
+          }
+      })})
 
  
     TestRouter.route('/api/test')
