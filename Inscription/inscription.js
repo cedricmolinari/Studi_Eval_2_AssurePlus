@@ -1,5 +1,3 @@
-/* import { encryptPassword } from './encryptPassword.js'; */
-
 let inputNumClt = document.querySelector('#numClt');
 let inputMdpClt = document.querySelector('#mdpClt');
 let inputNomClt = document.querySelector('#nomClt');

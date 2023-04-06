@@ -1,0 +1,55 @@
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Déclaration sinistre</h1>
+    <form class="form">
+        <div id="divDateSin">
+            <label for="date_sin">Date sinistre :</label>
+            <input type="date" name="date_sin" id="dateSin" required onblur="getVal()">
+        </div>
+        <div id="divImmatSin">
+            <label for="immat_sin">Immatriculation :</label>
+            <input type="text" name="immat_sin" id="immatSin" required onblur="getVal()">
+        </div>
+        <div id="divDommageCorporelSin">
+            <label for="dommage_corporel_sin">Dommage corporel :</label>
+            <input type="text" name="dommage_corporel_sin" id="dommageCorporelSin" required>
+        </div>
+        <div id="divResponsableSin">
+            <label for="responsable_sin">Responsable :</label>
+            <input type="text" name="responsable_sin" id="responsableSin" required>
+        </div>
+        <div id="divRueSin">
+            <label for="rue_sin">Rue :</label>
+            <input type="text" name="rue_sin" id="rueSin" required>
+        </div>
+        <div id="divVilleSin">
+            <label for="ville_sin">Ville :</label>
+            <input type="text" name="ville_sin" id="villeSin" required>
+        </div>
+        <div id="divCPSin">
+            <label for="cp_sin">Code postal :</label>
+            <input type="text" name="cp_sin" minlength="5" maxlength="5" id="cpSin" required onblur="getVal()">
+        </div>
+        <div id="divPhoto">
+            <label for="libelle_pho">Ajouter une photo :</label>
+            <input type="file" name="libelle_pho" id="libellePho" required onblur="getVal()">
+        </div>
+        <div id="divFormulaire">
+            <label for="libelle_form">Joindre le formulaire rempli et signé :</label>
+            <input type="file" name="libelle_form" id="libelleForm" required>
+        </div>
+        <div id="divCommentaire">
+            <label for="texte_com">Ajouter un commentaire :</label>
+            <input type="text" name="texte_com" id="texteCom" required>
+        </div>
+        <button type="submit">Envoyer la déclaration</button>
+    </form>
+    <a href="/Sinistre/sinistre.html">Retour</a>
+    <script type="module" src="declaration.js"></script>
+</body>
+</html>
