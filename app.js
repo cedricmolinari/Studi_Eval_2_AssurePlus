@@ -1,6 +1,5 @@
-import express from 'express'
-import path from 'path'
-import https from 'https';
+import express from 'express';
+import multer from 'multer';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import fs from 'fs';
@@ -13,6 +12,7 @@ console.log(process.env.user);
 // installer les librairies jsonwebtoken et express-jwt dans le projet pour gérer les accès à l'API en fonction du profil utilisateur
 // cours STUDI/Accueil/Médiathèque/Développement d'une solution digitale avec Java/Concevoir une API/Gérer les accès à une API
 
+// protéger la BDD des injections SQL avec le package node-pg-format
 
 const { Client } = pkg;
 const pgsql = new Client({
@@ -25,11 +25,6 @@ const pgsql = new Client({
     rejectUnauthorized: false,
     ca: fs.readFileSync('root.crt').toString()
   },
-});
-
-pgsql.connect(function(err) {
-  if (err) throw err;
-  console.log("Connected!");
 });
 
 const __filename = fileURLToPath(import.meta.url);
@@ -195,187 +190,110 @@ import { success, error } from './functions.js';
           }
       })})
 
- 
-    TestRouter.route('/api/test')
-      // Récupère tous les tests
-      .get((req, res) => {
-        pgsql.query("SELECT * FROM \"test\";", (err, result) => {
-          if (err) {
-            res.json(error(err.message))
-          } else {
-            res.status(200).json(result.rows)
-          }
-        })
-      })
-
-    TestRouter.route('/api/test/:id')
-      // Récupère un test d'après l'id
-      .get((req, res) => {
-        pgsql.query('SELECT * FROM \"test\" WHERE id = $1;', [req.params.id], (err, result) => {
-          if (err) {
-            res.json(error(err.message))
-          } else {
-            res.status(200).json(result.rows)
-          }
-        })
-      })
-
-      // Modifie un membre avec ID
-      .put((req, res) => {
-          pgsql.query('update "test" set nom_test = $1 where id = $2;', [req.body.nom_test, req.params.id], (err, result) => {
-            if (err) {
-              res.json(functions.error(err.message))
-            } else {         
-              res.status(200).json({"message":"Modification effectuée !"})
-            }
-          })
-      })
-
-    TestRouter.route('/api/test/')
-
-      // Ajoute un membre avec son nom
+    TestRouter.route('/api/declarations/')
+      //enregistre la déclaration de sinistre d'un client
       .post((req, res) => {
-        if (req.body.nom_test) {
-          pgsql.query('SELECT * FROM "test" WHERE nom_test = $1', [req.body.nom_test], (err, result) => {
-            if (err) {
-              res.json(error(err.message))
-            } else {
-              if (result.rows[0] != undefined) {
-                res.send({"message":"name already taken"})
-              } else {
-                pgsql.query('INSERT INTO test(nom_test) VALUES($1)', [req.body.nom_test], (err, result) => {
-                  if (err) {
-                    res.json(error(err.message))
-                  } else {
-                    pgsql.query('SELECT * FROM "test" WHERE nom_test = $1', [req.body.nom_test], (err, result) => {
-                      if (err) {
-                        res.json(error(err.message))
-                      } else {
-                        res.json(success(
-                          {id: result.rows[0].id,
-                          name: result.rows[0].nom_test}
-                        ))
-                      }
-                    })
-                  }
-                })
-              }
-            }
-          })
-        } else {
-          res.status(200).json({"message":"no name value"})
-        }
+        var sql = 'INSERT INTO "Sinistres"(reference_sin, date_sin, immat_sin, dommage_corporel_sin, responsable_sin, rue_sin, ville_sin, cp_sin, etat_sin) \
+                            SELECT $1, $2, $3, $4, $5, $6, $7, $8, \'en cours\';';
+        pgsql.query(sql, [req.body.reference_sin, req.body.date_sin, req.body.immat_sin, req.body.dommage_corporel_sin, req.body.responsable_sin, req.body.rue_sin, req.body.ville_sin, req.body.cp_sin])
+          if (err) {
+            res.json(error(err.message))
+          } else {
+            res.json(success('Déclaration réussie !'))
+          }
       })
+    
+    TestRouter.route('/api/declarations/commentaire/')
+    //enregistre le commentaire de sinistre d'un client
+    .post((req, res) => {
+      var sqlInsertCom =
+        `INSERT INTO "Commentaires"(texte_com, date_ajout_com, sinistre_id) \
+        SELECT $1, current_date, id_sin FROM "Sinistres" AS sin \
+        WHERE sin.id_sin = (SELECT id_sin FROM "Sinistres" ORDER BY id_sin DESC limit 1);`;
+      console.log(req.body.texte_com);
+      pgsql.query(sqlInsertCom, [req.body.texte_com])
+      if (err) {
+        res.json(error(err.message))
+      } else {
+        res.json(success('Déclaration réussie !'))
+      }
+    })
+    
+    TestRouter.route('/api/declarations/single-formulaire/')
+      .post(function(request, response, next) {
+        var filename;
+        var storage = multer.diskStorage({
+            destination: function(request, file, callback) {
+                callback(null, './upload');
+            },
+            filename: function(request, file, callback) {
+                var temp_file_arr = file.originalname.split(".");
+                var temp_file_name = temp_file_arr[0];
+                var temp_file_extension = temp_file_arr[1];
+                filename = temp_file_name + '-' + Date.now() + '.' + temp_file_extension
+                callback(null, temp_file_name + '-' + Date.now() + '.' + temp_file_extension);
+            }
+          });
+          var upload = multer({storage:storage}).single('document_form');
+          upload(request, response, function(error) {
+            if (error) {
+                console.log(error);
+                return response.end('Error Uploading File');
+            } else {
+              //let dateNow = new Date(Date.now()).toLocaleString().split(',')[0]
+              var sqlInsertForm =
+              `INSERT INTO "Formulaires" (document_form, date_ajout_form, sinistre_id, libelle_form) \
+                SELECT bytea('/upload/${filename}'), current_date, id_sin, '${filename}' FROM "Sinistres" AS sin \
+                WHERE sin.id_sin = (SELECT id_sin FROM "Sinistres" ORDER BY id_sin DESC limit 1)`;                 
+              pgsql.query(sqlInsertForm)
+            } 
+          })
+      });
+    
+    TestRouter.route('/api/declarations/multiple-images/')
+    .post(function(request, response, next) {
+      var filename;
+      var storage = multer.diskStorage({
+          destination: function(request, file, callback) {
+              callback(null, './upload');
+          },
+          filename: function(request, file, callback) {
+              var temp_file_arr = file.originalname.split(".");
+              var temp_file_name = temp_file_arr[0];
+              var temp_file_extension = temp_file_arr[1];
+              filename = temp_file_name + '-' + Date.now() + '.' + temp_file_extension
+              callback(null, temp_file_name + '-' + Date.now() + '.' + temp_file_extension);
+          }
+        });
+        var upload = multer({storage:storage}).array('image_pho', 5);
+        
+        upload(request, response, function(err) {
+            if (err) {
+                return response.end('Error Uploading File');
+            } else {
+                var file = request.files;
+                var arrError = [];
+                //response.end();
+                for (let i = 0 ; i < file.length ; i++) {
+                  if (((file[i].size/1024)/1024).toFixed(4) < 2) {
+                    var sqlPho =
+                    `INSERT INTO "Photos" (image_pho, date_ajout_pho, sinistre_id, libelle_pho) \
+                      SELECT bytea('/upload/${file[i].filename}'), current_date, id_sin, '${file[i].filename}' FROM "Sinistres" AS sin \
+                      WHERE sin.id_sin = (SELECT id_sin FROM "Sinistres" ORDER BY id_sin DESC limit 1)`;                 
+                    pgsql.query(sqlPho)
+                  } else {
+                    //return response.end(`Photo ${file[i].filename} trop volumineuse (limite : 2 mo)`);
+                    arrError.push({"message":`${file[i].filename}`})
+                  }
+                }
+                response.send({
+                  arrError
+                })
+              } 
+        })
+    })
 
     app.use(TestRouter)
     app.listen(3000, 'localhost', () => console.log('Started on port ' + 3000))
   }
 });
-
-/* app.use((req, res, next) => {
-  console.log('URL : ' + req.url)
-  next()
-})
-
-
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
-});
-
-/* app.post("/", (req, res) => {
-  const test = req.body;
-  var sql = "CALL testadd(2, @nom_test);"
-  pgsql.query(sql, [test.nom_test], (err, rows, fields) => {
-    if (!err)
-    res.send(rows);
-    else
-    console.log(err);
-  })
-}); */
-
-/* app.get('/index.html', function(req, res) {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-app.get('/Connexion/connexion.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '/Connexion/connexion.html'));
-});
-
-app.get('/Inscription/inscription.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '/Inscription/inscription.html'));
-});
-
-app.get('/get/clients', (request, response) => {
-    pgsql.query('SELECT * FROM test', (error, results) => {
-      if (error) {
-        throw error
-      }
-      response.status(200).json(results.rows)
-    })
-  }
-) */
-
-
-
-/* app.get('/get/clients/:id', (req, res)  => {
-  var sql = "SELECT * FROM public.\"Clients\" WHERE id_clt = ?;"
-  pgsql.query(sql, [req.params.id], (err, rows, fields) => {
-    if (err) throw err;
-    res.send(JSON.stringify(rows))
-  })
-})
-
-app.post('/', (request, response) => {
-    const { inscription } = request.body
-
-    pgsql.query('INSERT INTO test (nom_test) VALUES (${inscription.name})', [inscription.name], (error, results) => {
-      if (error) {
-        throw error
-      }
-      response.status(201).send(`User added with ID: ${results.rows[0].nom_test}`)
-    })
-  }
-) */
-
-/* create PROCEDURE public.clientsAdd(
-IN _num_clt INT,
-IN _mdp_clt VARCHAR(250),
-IN _nom_clt VARCHAR(100),
-IN _prenom_clt VARCHAR(100),
-IN _rue_clt VARCHAR(100),
-IN _ville_clt VARCHAR(100),
-IN _cp_clt VARCHAR(5),
-IN _mail_clt VARCHAR(100),
-IN _tel_clt VARCHAR(20)
-)
-LANGUAGE 'plpgsql'
-AS $BODY$
-
-BEGIN
-  INSERT INTO clients (num_clt, mdp_clt, nom_clt, prenom_clt, rue_clt, ville_clt, cp_clt, mail_clt, tel_clt) VALUES (_num_clt, _mdp_clt, _nom_clt, _prenom_clt, _rue_clt, _ville_clt, _cp_clt, _mail_clt, _tel_clt);
-END;
-$BODY$; 
-
-sql request :
-SET num_clt = 567, nom_clt = 'MARTIN', prenom_clt = 'Alexandre', rue_clt ='61 rue principale', ville_clt = 'Aix', cp_clt = '54150', mail_clt = 'c.molinari0@laposte.net', tel_clt = '0781383427', mdp_clt = 'mdp'; \
-  CALL clientsAdd(@num_clt, @mdp_clt, @nom_clt, @prenom_clt, @rue_clt, @ville_clt, @cp_clt, @mail_clt, @tel_clt);
-  */
-
-/* app.post('/get/clients', (req, res) => {
-  let clt = req.body;
-  var sql = "SET @num_clt = ?, @nom_clt = ?, @prenom_clt = ?, @rue_clt = ?, @ville_clt = ?, @cp_clt = ?, @mail_clt = ?, @tel_clt = ?, @mdp_clt = ?; \
-  CALL clientsadd(@num_clt, @mdp_clt, @nom_clt, @prenom_clt, @rue_clt, @ville_clt, @cp_clt, @mail_clt, @tel_clt);";
-  pgsql.query(sql, [clt.num_clt, clt.nom_clt, clt.prenom_clt, clt.rue_clt, clt.ville_clt, clt.cp_clt, clt.mail_clt, clt.tel_clt, clt.mdp_clt], (err, rows, fields) => {
-    if (!err)
-    res.send(rows);
-    else
-    console.log(err);
-  })
-
-}) 
-
-https.createServer(options, app).listen(443)
-
-/* app.listen(port, () => {
-  console.log(`Serveur démarré sur le port : ${port}`)
-}) */

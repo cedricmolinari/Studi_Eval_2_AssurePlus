@@ -6,27 +6,40 @@
 </head>
 <body>
     <h1>Déclaration sinistre</h1>
-    <form class="form">
+    <form class="form" enctype="multipart/form-data" method="post">
+        <div id="divReferenceSin">
+            <label for="reference_sin">Référence dossier :</label>
+            <input type="text" name="reference_sin" id="referenceSin" readonly>
+        </div>
         <div id="divDateSin">
             <label for="date_sin">Date sinistre :</label>
-            <input type="date" name="date_sin" id="dateSin" required onblur="getVal()">
+            <input type="date" name="date_sin" id="dateSin" required>
         </div>
         <div id="divImmatSin">
             <label for="immat_sin">Immatriculation :</label>
-            <input type="text" name="immat_sin" id="immatSin" required onblur="getVal()">
+            <input type="text" name="immat_sin" id="immatSin" minlength="9" maxlength="9" required onblur="getVal()">
         </div>
         <div id="divDommageCorporelSin">
-            <label for="dommage_corporel_sin">Dommage corporel :</label>
-            <input type="text" name="dommage_corporel_sin" id="dommageCorporelSin" required>
+            <label for="dommage_corporel_sin">Dommage(s) corporel(s) ?</label>
+            <select id="dommageCorporelSin" name="dommage_corporel_sin" required>
+                <option disabled selected value>Selectionner une réponse</option>
+                <option value="yes">Oui</option>
+                <option value="no">Non</option>
+            </select>
         </div>
         <div id="divResponsableSin">
-            <label for="responsable_sin">Responsable :</label>
-            <input type="text" name="responsable_sin" id="responsableSin" required>
+            <label for="responsable_sin">Accident responsable ?</label>
+            <select id="responsableSin" name="responsable_sin" required>
+                <option disabled selected value>Selectionner une réponse</option>
+                <option value="yes">Oui</option>
+                <option value="no">Non</option>
+            </select>
         </div>
         <div id="divRueSin">
             <label for="rue_sin">Rue :</label>
             <input type="text" name="rue_sin" id="rueSin" required>
         </div>
+        
         <div id="divVilleSin">
             <label for="ville_sin">Ville :</label>
             <input type="text" name="ville_sin" id="villeSin" required>
@@ -35,19 +48,28 @@
             <label for="cp_sin">Code postal :</label>
             <input type="text" name="cp_sin" minlength="5" maxlength="5" id="cpSin" required onblur="getVal()">
         </div>
-        <div id="divPhoto">
-            <label for="libelle_pho">Ajouter une photo :</label>
-            <input type="file" name="libelle_pho" id="libellePho" required onblur="getVal()">
-        </div>
-        <div id="divFormulaire">
-            <label for="libelle_form">Joindre le formulaire rempli et signé :</label>
-            <input type="file" name="libelle_form" id="libelleForm" required>
-        </div>
+        <button type="submit">Envoyer la déclaration</button>
+    </form>
+    <form class="formCommentaire">
         <div id="divCommentaire">
             <label for="texte_com">Ajouter un commentaire :</label>
-            <input type="text" name="texte_com" id="texteCom" required>
+            <textarea cols="20" rows="10" name="texte_com" id="comID">Zone de texte!</textarea>
         </div>
-        <button type="submit">Envoyer la déclaration</button>
+        <button type="submit">Soumettre un commentaire</button>
+    </form>
+    <form class="formMultipleImg" enctype="multipart/form-data">
+        <div id="divMlpPhoto">
+            <label for="image_pho">Ajouter une ou plusieurs photos :</label>
+            <input type="file" accept="image/*" name="image_pho" id="phoMlpID" multiple>
+        </div>
+        <button type="submit">Envoyer la photo</button>
+    </form>
+    <form class="formFormulaire" enctype="multipart/form-data">
+        <div id="divFormulaire">
+            <label for="document_form">Joindre le formulaire rempli et signé :</label>
+            <input type="file" accept="application/pdf" name="document_form" id="formID">
+        </div>
+        <button type="submit">Envoyer le formulaire signé</button>
     </form>
     <a href="/Sinistre/sinistre.html">Retour</a>
     <script type="module" src="declaration.js"></script>
