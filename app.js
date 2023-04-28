@@ -157,12 +157,6 @@ import { success, error } from './functions.js';
             const json = result.rows[0].mdp_clt;
             const obj = JSON.parse(json);
             console.log(obj);
-
-            /* res.json(success(
-              {num_clt: result.rows[0].num_clt,
-              mdp_clt: result.rows[0].mdp_clt})); */
-
-              /* '{"token":"u7PtZuv0hyWYyUzE","salt":"ui-FoSZDG_uXAiE1","hash":"832cac5f95fa7aefb68454b660bbc05b0302c744f12b043e70d3a00b2ec40f17"}' */
               res.json(success(
                 {num_clt: result.rows[0].num_clt,
                 mdp_clt: decryptPassword(obj, 'Plouf@54150?')}));
@@ -190,12 +184,12 @@ import { success, error } from './functions.js';
           }
       })})
 
-    TestRouter.route('/api/declarations/')
+    TestRouter.route('/api/declaration/:client_id')
       //enregistre la déclaration de sinistre d'un client
       .post((req, res) => {
-        var sql = 'INSERT INTO "Sinistres"(reference_sin, date_sin, immat_sin, dommage_corporel_sin, responsable_sin, rue_sin, ville_sin, cp_sin, etat_sin) \
-                            SELECT $1, $2, $3, $4, $5, $6, $7, $8, \'en cours\';';
-        pgsql.query(sql, [req.body.reference_sin, req.body.date_sin, req.body.immat_sin, req.body.dommage_corporel_sin, req.body.responsable_sin, req.body.rue_sin, req.body.ville_sin, req.body.cp_sin])
+        var sql = 'INSERT INTO "Sinistres"(reference_sin, date_sin, immat_sin, dommage_corporel_sin, responsable_sin, rue_sin, ville_sin, cp_sin, commentaire_sin, client_id, etat_sin) \
+                            SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, \'en cours\';';
+        pgsql.query(sql, [req.body.reference_sin, req.body.date_sin, req.body.immat_sin, req.body.dommage_corporel_sin, req.body.responsable_sin, req.body.rue_sin, req.body.ville_sin, req.body.cp_sin, req.body.commentaire_sin, req.params.client_id])
           if (err) {
             res.json(error(err.message))
           } else {
@@ -203,24 +197,9 @@ import { success, error } from './functions.js';
           }
       })
     
-    TestRouter.route('/api/declarations/commentaire/')
-    //enregistre le commentaire de sinistre d'un client
-    .post((req, res) => {
-      var sqlInsertCom =
-        `INSERT INTO "Commentaires"(texte_com, date_ajout_com, sinistre_id) \
-        SELECT $1, current_date, id_sin FROM "Sinistres" AS sin \
-        WHERE sin.id_sin = (SELECT id_sin FROM "Sinistres" ORDER BY id_sin DESC limit 1);`;
-      console.log(req.body.texte_com);
-      pgsql.query(sqlInsertCom, [req.body.texte_com])
-      if (err) {
-        res.json(error(err.message))
-      } else {
-        res.json(success('Déclaration réussie !'))
-      }
-    })
-    
     TestRouter.route('/api/declarations/single-formulaire/')
-      .post(function(request, response, next) {
+    .post(function(request, response, next) {
+        console.log('coucou');
         var filename;
         var storage = multer.diskStorage({
             destination: function(request, file, callback) {
@@ -254,16 +233,16 @@ import { success, error } from './functions.js';
     .post(function(request, response, next) {
       var filename;
       var storage = multer.diskStorage({
-          destination: function(request, file, callback) {
-              callback(null, './upload');
-          },
-          filename: function(request, file, callback) {
-              var temp_file_arr = file.originalname.split(".");
-              var temp_file_name = temp_file_arr[0];
-              var temp_file_extension = temp_file_arr[1];
-              filename = temp_file_name + '-' + Date.now() + '.' + temp_file_extension
-              callback(null, temp_file_name + '-' + Date.now() + '.' + temp_file_extension);
-          }
+        destination: function(request, file, callback) {
+          callback(null, './upload');
+        },
+        filename: function(request, file, callback) {
+          var temp_file_arr = file.originalname.split(".");
+          var temp_file_name = temp_file_arr[0];
+          var temp_file_extension = temp_file_arr[1];
+          filename = temp_file_name + '-' + Date.now() + '.' + temp_file_extension
+          callback(null, temp_file_name + '-' + Date.now() + '.' + temp_file_extension);
+        }
         });
         var upload = multer({storage:storage}).array('image_pho', 5);
         
@@ -292,6 +271,191 @@ import { success, error } from './functions.js';
               } 
         })
     })
+
+    TestRouter.route('/api/declarations/single-image/:sinistre_id')
+    .post(function(request, response, next) {
+      var filename;
+      var storage = multer.diskStorage({
+        destination: function(request, file, callback) {
+          callback(null, './upload');
+        },
+        filename: function(request, file, callback) {
+          var temp_file_arr = file.originalname.split(".");
+          var temp_file_name = temp_file_arr[0];
+          var temp_file_extension = temp_file_arr[1];
+          filename = temp_file_name + '-' + Date.now() + '.' + temp_file_extension
+          callback(null, temp_file_name + '-' + Date.now() + '.' + temp_file_extension);
+        }
+        });
+        var upload = multer({storage:storage}).array('image_pho', 5);
+        
+        upload(request, response, function(err) {
+            if (err) {
+                return response.end('Error Uploading File');
+            } else {
+                var file = request.files;
+                var arrError = [];
+                //response.end();
+                for (let i = 0 ; i < file.length ; i++) {
+                    var sqlNbPho = 
+                    `SELECT COUNT(*) FROM "Photos" WHERE sinistre_id = $1;`
+                    pgsql.query(sqlNbPho, [request.params.sinistre_id], (err, result) => {
+                      console.log(result.rows[0].count);
+                      if ((((file[i].size/1024)/1024).toFixed(4) > 2)) {
+                        response.json(error(`La photo ${file[i].filename} trop volumineuse (limite : 2 mo)`))
+/*                         arrError.push({"message":`${file[i].filename}`})
+                        response.send({
+                          arrError
+                        }) */
+                      } else {
+
+                        if (result.rows[0].count > 4) {
+                          response.json(error('limite du nombre de photos dépassée (5)'))
+                        } else {
+  
+                          var sqlPho =
+                          `INSERT INTO "Photos" (image_pho, date_ajout_pho, sinistre_id, libelle_pho) \
+                            VALUES (bytea('/upload/${file[i].filename}'), current_date, $1, '${file[i].filename}')`;                 
+                          pgsql.query(sqlPho, [request.params.sinistre_id], (err, result) => {
+                            if (err) {
+                              response.json(error(err.message))
+                            } else {
+                              response.json(success(`Ajout de photo réussi`))
+                            }
+                          })
+                        }}})
+                }
+                
+              } 
+        })
+    })
+
+    TestRouter.route('/api/declarations/multiple-images/get/:sinistre_id')
+    // Récupère les photos d'un sinistre d'après son ID
+    .get((req, res) => {
+      pgsql.query(`SELECT * FROM \"Photos\" WHERE sinistre_id = $1::INTEGER;`, [req.params.sinistre_id], (err, result) => {
+        if (err) {
+          res.json(error(err.message))
+        } else {
+          res.json(success(result.rows));
+        }
+      })
+    })
+
+    TestRouter.route('/api/modif-declaration/multiple-images/post/:sinistre_id')
+    // Poste les photos d'un sinistre d'après son ID
+    .post((req, res) => {
+      pgsql.query(`DELETE FROM \"Photos\" WHERE sinistre_id = $1::INTEGER AND id_pho = $2::INTEGER;`, [req.body.sinistre_id, req.body.id_pho], (err, result) => {
+        if (err) {
+          res.json(error(err.message))
+        } else {
+          res.json(success(result));
+        }
+      })
+    }) 
+    TestRouter.route('/api/modif-declaration/put/dommage-corp/:id_sin')
+    // Modifie le dommage corporel d'un sinistre d'après son ID
+    .put((req, res) => {
+      pgsql.query(`UPDATE \"Sinistres\" SET dommage_corporel_sin = $2 WHERE id_sin = $1::INTEGER;`, [req.body.id_sin, req.body.dommage_corporel_sin], (err, result) => {
+        if (err) {
+          res.json(error(err.message))
+        } else {
+          res.json(success(result));
+        }
+      })
+    })
+    TestRouter.route('/api/modif-declaration/put/commentaire/:id_sin')
+    // Modifie le commentaire d'un sinistre d'après son ID
+    .put((req, res) => {
+      pgsql.query(`UPDATE \"Sinistres\" SET commentaire_sin = $2 WHERE id_sin = $1::INTEGER;`, [req.body.id_sin, req.body.commentaire_sin], (err, result) => {
+        if (err) {
+          res.json(error(err.message))
+        } else {
+          res.json(success(result));
+        }
+      })
+    })
+    TestRouter.route('/api/modif-declaration/put/responsabilite/:id_sin')
+    // Modifie la responsabilité d'un sinistre d'après son ID
+    .put((req, res) => {
+      pgsql.query(`UPDATE \"Sinistres\" SET responsable_sin = $2 WHERE id_sin = $1::INTEGER;`, [req.body.id_sin, req.body.responsable_sin], (err, result) => {
+        if (err) {
+          res.json(error(err.message))
+        } else {
+          res.json(success(result));
+        }
+      })
+    })
+    TestRouter.route('/api/modif-declaration/put/rue/:id_sin')
+    // Modifie la rue d'un sinistre d'après son ID
+    .put((req, res) => {
+      pgsql.query(`UPDATE \"Sinistres\" SET rue_sin = $2 WHERE id_sin = $1::INTEGER;`, [req.body.id_sin, req.body.rue_sin], (err, result) => {
+        if (err) {
+          res.json(error(err.message))
+        } else {
+          res.json(success(result));
+        }
+      })
+    })
+    TestRouter.route('/api/modif-declaration/put/code-postal/:id_sin')
+    // Modifie le code postal d'un sinistre d'après son ID
+    .put((req, res) => {
+      pgsql.query(`UPDATE \"Sinistres\" SET cp_sin = $2 WHERE id_sin = $1::INTEGER;`, [req.body.id_sin, req.body.cp_sin], (err, result) => {
+        if (err) {
+          res.json(error(err.message))
+        } else {
+          res.json(success(result));
+        }
+      })
+    })
+    TestRouter.route('/api/modif-declaration/put/ville/:id_sin')
+    // Modifie la ville d'un sinistre d'après son ID
+    .put((req, res) => {
+      pgsql.query(`UPDATE \"Sinistres\" SET ville_sin = $2 WHERE id_sin = $1::INTEGER;`, [req.body.id_sin, req.body.ville_sin], (err, result) => {
+        if (err) {
+          res.json(error(err.message))
+        } else {
+          res.json(success(result));
+        }
+      })
+    })
+    
+    TestRouter.route('/api/sinistres/consultation/:client_id')
+      // Récupère les sinistres d'un client d'après son ID
+      .get((req, res) => {
+        pgsql.query(`SELECT * FROM \"Sinistres\" WHERE client_id = $1::INTEGER;`, [req.params.client_id], (err, result) => {
+          if (err) {
+            res.json(error(err.message))
+          } else {
+              res.json(success(result.rows));
+          }
+        })
+      })
+      TestRouter.route('/api/sinistres/consultation/commentaire/:sinistre_id')
+      // Récupère les commentaires d'un sinistre d'après son ID
+      .get((req, res) => {
+        pgsql.query(`SELECT * FROM \"Photos\" WHERE sinistre_id = $1::INTEGER;`, [req.params.sinistre_id], (err, result) => {
+          if (err) {
+            res.json(error(err.message))
+          } else {
+              res.json(success(result.rows));
+          }
+        })
+      })
+    
+    TestRouter.route('/api/sinistres/consultation/encours/:id_sin')
+    // Récupère les sinistres d'un client d'après son ID
+    .get((req, res) => {
+      pgsql.query(`SELECT * FROM \"Sinistres\" WHERE id_sin = $1;`, [req.params.id_sin], (err, result) => {
+        if (err) {
+          res.json(error(err.message))
+        } else {
+            res.json(success(result.rows[0]));
+        }
+      })
+    })
+
+    
 
     app.use(TestRouter)
     app.listen(3000, 'localhost', () => console.log('Started on port ' + 3000))

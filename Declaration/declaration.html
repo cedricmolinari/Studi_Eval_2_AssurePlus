@@ -5,6 +5,7 @@
     <title>Document</title>
 </head>
 <body>
+    <h3></h3>
     <h1>Déclaration sinistre</h1>
     <form class="form" enctype="multipart/form-data" method="post">
         <div id="divReferenceSin">
@@ -48,14 +49,11 @@
             <label for="cp_sin">Code postal :</label>
             <input type="text" name="cp_sin" minlength="5" maxlength="5" id="cpSin" required onblur="getVal()">
         </div>
-        <button type="submit">Envoyer la déclaration</button>
-    </form>
-    <form class="formCommentaire">
         <div id="divCommentaire">
-            <label for="texte_com">Ajouter un commentaire :</label>
-            <textarea cols="20" rows="10" name="texte_com" id="comID">Zone de texte!</textarea>
+            <label for="commentaire_sin">Ajouter un commentaire :</label>
+            <textarea cols="20" rows="10" name="commentaire_sin" id="comID">Zone de texte!</textarea>
         </div>
-        <button type="submit">Soumettre un commentaire</button>
+        <button type="submit">Envoyer la déclaration</button>
     </form>
     <form class="formMultipleImg" enctype="multipart/form-data">
         <div id="divMlpPhoto">

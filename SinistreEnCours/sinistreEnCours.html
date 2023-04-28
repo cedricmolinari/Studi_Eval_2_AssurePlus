@@ -6,6 +6,8 @@
     <title>Document</title>
 </head>
 <body>
+    <h3></h3>
+    <h6></h6>
     <h1>Historique de mes sinistres</h1>
     <table>
         <thead>
@@ -15,12 +17,24 @@
         </thead>
         <tbody>
             <tr>
-                <td>Référence sinistre</td>
-                <td>Date de déclaration</td>
-                <td>Etat</td>
+                <td id="ref">Référence sinistre</td>
+                <td id="date">Date de déclaration</td>
+                <td id="etat">Etat</td>
             </tr>
         </tbody>
     </table>
+    <form>
+        <fieldset>
+            <legend>Cliquer sur une référence de sinistre pour en afficher le détail</legend>
+        </fieldset>
+    </form>
+    <form id="formGestionModifs">
+        <input type="button" value="Modifier les données" id="modifDonnees">
+    </form>
+    <form id="formAjoutPhoto">
+        <label for="image_pho">Ajouter une photo au dossier sélectionné :</label>
+        <input type="file" accept="image/*" id="btnNouvellePhoto" name="image_pho" value="Ajouter une nouvelle photo">
+    </form>
     <a href="/Sinistre/sinistre.html">Retour</a>
     <script type="module" src="sinistreEnCours.js"></script>
 </body>

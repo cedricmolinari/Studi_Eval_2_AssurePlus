@@ -1,4 +1,30 @@
+// <--- AJOUTER UNE INTERDICTION DES DECLARATIONS DE SINISTRE LE MEME JOUR POUR LE MEME VEHICULE --->
+var IDconnexion = document.querySelector('h3');
+var clientID = [];
+var okForUploads = [];
+
+window.addEventListener("load", () => {
+    fetch('http://localhost:3000/api/clients/', {
+      method: 'GET',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+    })
+    .then((response) => {
+        response.json().then(message => ({
+            message: message,
+            status: response.status
+        })).then(response => {
+            console.log(response.message);
+            clientID.push(response.message[0].id_clt)
+            let user = `${response.message[0].nom_clt} ${response.message[0].prenom_clt}`
+            IDconnexion.innerHTML = `Vous êtes connecté en tant que : ${user}`
+        })
+    })
+})
+
 let inputReferenceSin = document.querySelector('#referenceSin');
+//inputReferenceSin.setAttribute('disabled', '');
 let inputDateSin = document.querySelector('#dateSin');
 let inputImmatSin = document.querySelector('#immatSin');
 let inputDommageCorporelSin = document.querySelector('#dommageCorporelSin');
@@ -68,10 +94,12 @@ declarationForm.addEventListener('submit', event => {
 
     let prefixeRef = inputDateSin.value;
     let suffixeRef = getVal(inputImmatSin).replaceAll('-', '');
-    inputReferenceSin.value = prefixeRef + '/' + suffixeRef;
+    inputReferenceSin.value = prefixeRef + '-' + suffixeRef;
 
     const formData = new FormData(declarationForm);
     const data = Object.fromEntries(formData);
+    console.log(data);
+    console.log(clientID);
 
     checkImmatSin(getVal(inputImmatSin))
     ckeckCPSin(getVal(inputCPSin))
@@ -87,81 +115,84 @@ declarationForm.addEventListener('submit', event => {
     }
 
     if (declaration) {
-      fetch('http://localhost:3000/api/declarations/', {
+      fetch(`http://localhost:3000/api/declaration/${clientID}`, {
       method: 'POST', // or 'PUT'
       headers: {
           'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
       })
+      
       .then((response) => {
         response.json().then(message => ({
           message: message,
           status: response.status
         })).then(response => {
-          console.log(response.message);
+          alert(response.message.result);
+          okForUploads.push(true)
+          //on désactive tous les champs du formulaire de déclaration
+          inputDateSin.setAttribute('disabled', '');
+          inputImmatSin.setAttribute('disabled', '');
+          inputDommageCorporelSin.setAttribute('disabled', '');
+          inputResponsableSin.setAttribute('disabled', '');
+          inputRueSin.setAttribute('disabled', '');
+          inputVilleSin.setAttribute('disabled', '');
+          inputCPSin.setAttribute('disabled', '');
+          inputCommentaire.setAttribute('disabled', '');
         })
     })
   }});
 
-  declarationFormCommentaire.addEventListener("submit", event => {
-    event.preventDefault();
-    const formData = new FormData(declarationFormCommentaire);
-    const data = Object.fromEntries(formData);
-    fetch('http://localhost:3000/api/declarations/commentaire/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
-    .then((response) => {
-      response.json().then(message => ({
-        message: message,
-        status: response.status
-      })).then(response => {
-        console.log(response.message);
-      })
-    })
-  })
-
   declarationFormMlpImg.addEventListener("submit", event => {
     event.preventDefault();
-    const bodyFormData = new FormData()
-    const files = event.target.image_pho.files;
-    if (files.length != 0) {
-        for (const single_file of files) {
-          bodyFormData.append('image_pho', single_file)
-        }
-    }
-    fetch('http://localhost:3000/api/declarations/multiple-images/', {
-      method: 'POST',
-      body: bodyFormData,
-    })
-    .then((response) => {
-      response.json().then(message => ({
-        message: message
-      })).then(response => {
-        var count = Object.keys(response.message.arrError).length;
-        for (let i = 0 ; i < count; i++) {
-          alerteElementP(`erreurPhoMlp${i}`, `La photo ${response.message.arrError[i].message} est trop volumineuse (supérieure à 2 mo)`, "divMlpPhoto")
-        }
+    if (okForUploads[0]) {
+      const bodyFormData = new FormData()
+      const files = event.target.image_pho.files;
+      console.log(files);
+      if (files.length != 0) {
+          for (const single_file of files) {
+            bodyFormData.append('image_pho', single_file)
+          }
+      }
+      console.log(bodyFormData);
+      fetch('http://localhost:3000/api/declarations/multiple-images/', {
+        method: 'POST',
+        body: bodyFormData,
       })
-    })
+      .then((response) => {
+        response.json().then(message => ({
+          message: message
+        })).then(response => {
+          var count = Object.keys(response.message.arrError).length;
+          for (let i = 0 ; i < count; i++) {
+            alerteElementP(`erreurPhoMlp${i}`, `La photo ${response.message.arrError[i].message} est trop volumineuse (supérieure à 2 mo)`, "divMlpPhoto")
+          }
+        })
+      })
+
+    } else {
+      alert('Merci de soumettre un sinistre valide d\'abord');
+    }
   })
+  
 
   declarationFormFormulaire.addEventListener("submit", event => {
-    event.preventDefault();
-    const file = event.target.document_form.files[0]
-    const bodyFormData = new FormData()
-    bodyFormData.append('document_form', file)
-    console.log(bodyFormData);
-    fetch('http://localhost:3000/api/declarations/single-formulaire/', {
-      method: 'POST',
-      body: bodyFormData,
-    })
-      .then(response => {
-        console.log(response.message);
+    if (okForUploads[0]) {
+      event.preventDefault();
+      const file = event.target.document_form.files[0]
+      console.log(file);
+      const bodyFormData = new FormData()
+      bodyFormData.append('document_form', file)
+      console.log(bodyFormData);
+      fetch('http://localhost:3000/api/declarations/single-formulaire/', {
+        method: 'POST',
+        body: bodyFormData,
       })
+        .then(response => {
+          console.log(response.message);
+        })
+    } else {
+      alert('Merci de soumettre un sinistre valide d\'abord');
+    }
     
   })
