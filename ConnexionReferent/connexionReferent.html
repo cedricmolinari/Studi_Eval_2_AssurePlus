@@ -1,0 +1,26 @@
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Connexion référent</h1>
+    <form id="connectionForm" action="/TableauDeBord/tableauBord.html">
+        <div id="c1">
+            <label for="utilisateur_ut">Utilisateur :</label>
+            <input type="text" name="utilisateur_ut" id="user" onblur="getVal()" required>
+        </div>
+        <div id="c2">
+            <label for="password_ut">Mot de passe :</label>
+            <input type="password" name="password_ut" id="pw" onblur="getVal()" required>
+        </div>
+        <div id="new">
+
+        </div>
+        <button type="submit" id="btnConnexion">Connexion</button>
+    </form>
+    <a href="/Accueil/accueil.html">Retour</a>
+    <script type="module" src="/ConnexionReferent/connexionReferent.js"></script>
+</body>
+</html>

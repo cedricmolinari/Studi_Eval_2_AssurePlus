@@ -7,12 +7,19 @@ import pkg from 'pg';
 import * as dotenv from 'dotenv';
 import { encryptPassword } from './encryptPassword.js';
 import { decryptPassword } from './decryptPassword.js';
+import session from 'express-session';
+import passport from 'passport';
+import { Strategy as LocalStrategy } from 'passport-local';
+import bcrypt from 'bcrypt';
+import bodyParser from 'body-parser';
 dotenv.config()
 console.log(process.env.user);
 // installer les librairies jsonwebtoken et express-jwt dans le projet pour gérer les accès à l'API en fonction du profil utilisateur
 // cours STUDI/Accueil/Médiathèque/Développement d'une solution digitale avec Java/Concevoir une API/Gérer les accès à une API
 
 // protéger la BDD des injections SQL avec le package node-pg-format
+
+
 
 const { Client } = pkg;
 const pgsql = new Client({
@@ -32,6 +39,14 @@ const __dirname = dirname(__filename);
 const app = express()
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+/* app.use(express.static('public')); // Serveur de fichiers statiques
+
+app.get('/Sinistre/sinistre.html', (req, res) => {
+  const num_clt = req.query.num_clt;
+  res.send(`<h1>Bienvenue, ${num_clt} !</h1>`);
+}); */
+
 app.use(express.static(__dirname));
 
 import { success, error } from './functions.js';
@@ -50,17 +65,116 @@ import { success, error } from './functions.js';
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
 
-    TestRouter.route('/')
+    // <--- mise en place d'un profil admin --->
+    // Ajoutez le middleware bodyParser pour traiter le corps de la requête
+    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(bodyParser.json());
 
+    // Utiliser les sessions Express
+    app.use(
+      session({
+        secret: 'your-secret-key',
+        resave: false,
+        saveUninitialized: false,
+      })
+    );
+
+    // Stratégie d'authentification locale pour Passport.js
+    async function findUserByUsername(username) {
+      return new Promise((resolve, reject) => {
+        pgsql.query(`SELECT utilisateur_ut, password_ut FROM \"Utilisateurs\" WHERE utilisateur_ut = $1;`, [username], (err, result) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(result.rows[0]);
+            }
+          }
+        );
+      });
+    }
+
+    const customLocalStrategy = (req, username, password, done) => {
+      //console.log(customLocalStrategy);
+      (async () => {
+        try {
+          const user = await findUserByUsername(req.body.utilisateur_ut);
+    
+          if (!user) {
+            return done(null, false, { message: 'Incorrect username.' });
+          }
+    
+          const isValidPassword = password === user.password_ut;
+          if (!isValidPassword) {
+            return done(null, false, { message: 'Incorrect password.' });
+          }
+    
+          return done(null, user);
+        } catch (error) {
+          return done(error);
+        }
+      })();
+    };
+    
+    passport.use(new LocalStrategy({
+      passReqToCallback: true,
+      usernameField: 'utilisateur_ut', // Assurez-vous d'utiliser le bon nom de champ pour l'identifiant
+      passwordField: 'password_ut' // Assurez-vous d'utiliser le bon nom de champ pour le mot de passe
+    }, customLocalStrategy));   
+        
+    
+    TestRouter.route('/api/referents/connexion').post((req, res, next) => {
+      passport.authenticate('local', (err, user, info) => {
+        if (err) {
+          return next(err);
+        }
+        //console.log(user);
+        //console.log(info);
+        if (!user) {
+          return res.status(401).json({ message: info.message });
+        }
+        req.logIn(user, (err) => {
+          if (err) {
+            return next(err);
+          }
+          res.status(200).json({ utilisateur_ut: user.utilisateur_ut, password_ut: user.password_ut });
+        });
+      })(req, res, next);
+    });
+    
+    // Configurer Passport.js
+    app.use(passport.initialize());
+    app.use(passport.session());
+
+    // Ajoutez les fonctions de sérialisation et de désérialisation de Passport
+    passport.serializeUser((user, done) => {
+      done(null, user.utilisateur_ut);
+    });
+
+    passport.deserializeUser(async (username, done) => {
+      try {
+        const user = await findUserByUsername(username);
+        done(null, user);
+      } catch (error) {
+        done(error, null);
+      }
+    });
+    app.use((req, res, next) => {
+      console.log('Session data:', req.session);
+      next();
+    });
+          
+    TestRouter.route('/')
+      
       //affiche la page d'accueil
       .get((req, res) => {
-        res.sendFile(__dirname + "/Accueil/accueil.html");
+          console.log('pas referent');
+          res.sendFile(__dirname + "/Accueil/accueil.html");
       });
     
     TestRouter.route('/Accueil/accueil.html')
 
-      //affiche la page d'accueil
       .get((req, res) => {
+        console.log('pas referent');
         res.sendFile(__dirname + "/Accueil/accueil.html");
       });
     
@@ -77,10 +191,17 @@ import { success, error } from './functions.js';
       });
     
     TestRouter.route('/Sinistre/sinistre.html')
-    //affiche la page de connexion
-    .get((req, res) => {
-      res.sendFile(__dirname + "/Sinistre/sinistre.html");
-    });
+      //affiche la page de connexion
+      .get((req, res) => {
+        res.sendFile(__dirname + `/Sinistre/sinistre.html`);
+      });
+
+    /* TestRouter.route('/Sinistre/sinistre.html')
+      //affiche la page de connexion
+      .post((req, res) => {
+        const num_clt = req.query.num_clt;
+        res.sendFile(__dirname + `/Sinistre/sinistre.html?num_clt=${num_clt}`);
+      }); */
       
 
     TestRouter.route('/api/clients')
@@ -412,6 +533,30 @@ import { success, error } from './functions.js';
     // Modifie la ville d'un sinistre d'après son ID
     .put((req, res) => {
       pgsql.query(`UPDATE \"Sinistres\" SET ville_sin = $2 WHERE id_sin = $1::INTEGER;`, [req.body.id_sin, req.body.ville_sin], (err, result) => {
+        if (err) {
+          res.json(error(err.message))
+        } else {
+          res.json(success(result));
+        }
+      })
+    })
+
+    TestRouter.route('/api/referent/put/com-referent/:id_sin')
+    // Modifie la ville d'un sinistre d'après son ID
+    .put((req, res) => {
+      pgsql.query(`UPDATE \"Sinistres\" SET commentaire_referent_sin = $2 WHERE id_sin = $1::INTEGER;`, [req.params.id_sin, req.body.commentaire_referent_sin], (err, result) => {
+        if (err) {
+          res.json(error(err.message))
+        } else {
+          res.json(success(result));
+        }
+      })
+    })
+
+    TestRouter.route('/api/referent/put/etat-sinistre/:id_sin')
+    // Modifie la ville d'un sinistre d'après son ID
+    .put((req, res) => {
+      pgsql.query(`UPDATE \"Sinistres\" SET etat_sin = $2 WHERE id_sin = $1::INTEGER;`, [req.params.id_sin, req.body.etat_sin], (err, result) => {
         if (err) {
           res.json(error(err.message))
         } else {

@@ -15,7 +15,19 @@ var arrPhotosID = [];
 var clientID;
 var modifEnCours = false;
 
-window.addEventListener("load", (e) => {
+document.addEventListener('DOMContentLoaded', function() {
+  const bandeauConnexion = sessionStorage.getItem('bandeauConnexion');
+  if (bandeauConnexion) {
+    document.getElementById('IDconnexion').innerHTML = bandeauConnexion;
+  }
+});
+
+var stockageClientID;
+window.addEventListener('load', () => {
+  stockageClientID = sessionStorage.getItem('clientID');
+})
+
+/* window.addEventListener("load", (e) => {
   e.preventDefault();
   //on cache les boutons modifier et ajout photo au chargement de la page
   boutonModifDonnees.style.display = "none";
@@ -37,7 +49,7 @@ window.addEventListener("load", (e) => {
         infoConnexion.innerHTML = `Vous êtes connecté en tant que : ${user}`;
       });
   });
-});
+}); */
 
 fetch("http://localhost:3000/api/clients/", {
   method: "GET",
@@ -52,7 +64,7 @@ fetch("http://localhost:3000/api/clients/", {
       status: response.status,
     }))
     .then((response) => {
-      let ID = `${response.message[0].id_clt}`;
+      let ID = `${stockageClientID}`;
       infoConnexion.setAttribute("id", ID);
       clientID = infoConnexion.getAttribute("id");
       fetch(`http://localhost:3000/api/sinistres/consultation/${clientID}`, {

@@ -1,4 +1,4 @@
-let btnGetResultats = document.querySelector('.getResultats');
+/* let btnGetResultats = document.querySelector('.getResultats');
 let btnPostInscription = document.querySelector('.form')
 
 
@@ -37,4 +37,4 @@ btnPostInscription.addEventListener('submit', event => {
         .catch((error) => {
           console.error('Error:', error);
         });
-})
+}) */

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Menu déroulant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css">
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 50%;
+      }
+      th,
+      td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      #etatSin, #modifEtatSin {
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
+  </head>
+  <body>
+    <h1>Tableau de bord</h1>
+    <form id="formSelectDossier">
+      <label for="menu-clients">Liste des clients :</label>
+      <select id="menu-clients" name="menu-clients">
+        <option value="Sélectionner un client">Sélectionner un client</option>
+      </select>
+      <label for="menu-sinistres">Liste des sinistres :</label>
+      <select id="menu-sinistres" name="menu-sinistres">
+        <option id="valSinDefault" value="- en attente sélection client -">
+          - en attente sélection client -
+        </option>
+      </select>
+    </form>
+    <table>
+      <tr>
+        <th colspan="2">Informations du dossier</th>
+      </tr>
+      <tr>
+        <td>Référence sinistre</td>
+        <td id="ligneRefSin"></td>
+      </tr>
+      <tr>
+        <td>Date de déclaration</td>
+        <td id="ligneDateSin"></td>
+      </tr>
+      <tr>
+        <td>Etat du sinistre</td>
+        <td id="ligneEtatSin">
+          <p id="etatSin"></p>
+          <i id="modifEtatSin" class="fas fa-edit" style="cursor:pointer;"></i>
+        </td>
+
+      </tr>
+      <tr>
+        <th colspan="2">Détail du sinistre</th>
+      </tr>
+      <tr>
+        <td rowspan="3">Lieu du sinistre</td>
+        <td id="ligneRueSin"></td>
+      </tr>
+      <tr>
+        <td id="ligneCPSin"></td>
+      </tr>
+      <tr>
+        <td id="ligneVilleSin"></td>
+      </tr>
+      <tr>
+        <td>Dommage corporel</td>
+        <td id="ligneDmgSin"></td>
+      </tr>
+      <tr>
+        <td>Responsabilité</td>
+        <td id="ligneRespSin"></td>
+      </tr>
+      <tr>
+        <td>Photo(s)</td>
+        <td id="lignePhotoSin"></td>
+      </tr>
+      <tr>
+        <td>Commentaire client</td>
+        <td id="ligneComClt"></td>
+      </tr>
+      <tr>
+        <td>Commentaire référent</td>
+        <td id="ligneComRef">
+          <input
+            type="text"
+            name="commentaire_referent_sin"
+            id="comRef"
+            disabled
+          />
+          <i id="modifComRef" class="fas fa-edit" style="cursor:pointer;"></i>
+        </td>
+      </tr>
+    </table>
+    <button id="submitModifs" type="submit" disabled>Cliquer sur les icones d'édition pour modifier</button>
+    <a href="/Accueil/accueil.html">Retour</a>
+    <script type="module" src="tableauBord.js"></script>
+  </body>
+</html>

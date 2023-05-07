@@ -3,7 +3,20 @@ var IDconnexion = document.querySelector('h3');
 var clientID = [];
 var okForUploads = [];
 
-window.addEventListener("load", () => {
+document.addEventListener('DOMContentLoaded', function() {
+  const bandeauConnexion = sessionStorage.getItem('bandeauConnexion');
+  if (bandeauConnexion) {
+    document.getElementById('IDconnexion').innerHTML = bandeauConnexion;
+  }
+});
+
+window.addEventListener('load', () => {
+  const stockageClientID = sessionStorage.getItem('clientID');
+  clientID.push(stockageClientID)
+})
+
+
+/* window.addEventListener("load", () => {
     fetch('http://localhost:3000/api/clients/', {
       method: 'GET',
       headers: {
@@ -21,7 +34,7 @@ window.addEventListener("load", () => {
             IDconnexion.innerHTML = `Vous êtes connecté en tant que : ${user}`
         })
     })
-})
+}) */
 
 let inputReferenceSin = document.querySelector('#referenceSin');
 //inputReferenceSin.setAttribute('disabled', '');
