@@ -4,12 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Garage le plus proche</title>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMdk6IuIWQfJgI-8tNcntNAL-u4TZniIE&libraries=places"></script>
+  <script defer src="assistance.js"></script>
 </head>
-<body onload="trouverGarageLePlusProche()">
+<body>
   <h3><div id="IDconnexion"></div></h3>
-  <h1>Garage le plus proche</h1>
-  <p>Veuillez consulter la console pour voir le garage le plus proche.</p>
+  <h1>Besoin d'un garage ?</h1>
+  <form id="form">
+    <label for="userInput">Entrez votre nom :</label>
+    <input type="text" id="userInput"/>
+    <button type="submit">Rechercher les garages les plus proches</button>
+  </form>
+  <div id="listeGarages">
+
+  </div>
   <a href="/Sinistre/sinistre.html">Retour à l'accueil</a>
-  <script src="assistance.js"></script>
 </body>
 </html>

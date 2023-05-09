@@ -119,8 +119,8 @@ import { success, error } from './functions.js';
       passReqToCallback: true,
       usernameField: 'utilisateur_ut', // Assurez-vous d'utiliser le bon nom de champ pour l'identifiant
       passwordField: 'password_ut' // Assurez-vous d'utiliser le bon nom de champ pour le mot de passe
-    }, customLocalStrategy));   
-        
+    }, customLocalStrategy));
+  
     
     TestRouter.route('/api/referents/connexion').post((req, res, next) => {
       passport.authenticate('local', (err, user, info) => {
