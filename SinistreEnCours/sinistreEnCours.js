@@ -15,41 +15,17 @@ var arrPhotosID = [];
 var clientID;
 var modifEnCours = false;
 
-document.addEventListener('DOMContentLoaded', function() {
-  const bandeauConnexion = sessionStorage.getItem('bandeauConnexion');
+document.addEventListener("DOMContentLoaded", function () {
+  const bandeauConnexion = sessionStorage.getItem("bandeauConnexion");
   if (bandeauConnexion) {
-    document.getElementById('IDconnexion').innerHTML = bandeauConnexion;
+    document.getElementById("IDconnexion").innerHTML = bandeauConnexion;
   }
 });
 
 var stockageClientID;
-window.addEventListener('load', () => {
-  stockageClientID = sessionStorage.getItem('clientID');
-})
-
-/* window.addEventListener("load", (e) => {
-  e.preventDefault();
-  //on cache les boutons modifier et ajout photo au chargement de la page
-  boutonModifDonnees.style.display = "none";
-  formNouvellePhoto.style.display = "none";
-  fetch("http://localhost:3000/api/clients/", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }).then((response) => {
-    response
-      .json()
-      .then((message) => ({
-        message: message,
-        status: response.status,
-      }))
-      .then((response) => {
-        let user = `${response.message[0].nom_clt} ${response.message[0].prenom_clt}`;
-        infoConnexion.innerHTML = `Vous êtes connecté en tant que : ${user}`;
-      });
-  });
-}); */
+window.addEventListener("load", () => {
+  stockageClientID = sessionStorage.getItem("clientID");
+});
 
 fetch("http://localhost:3000/api/clients/", {
   method: "GET",
@@ -82,49 +58,66 @@ fetch("http://localhost:3000/api/clients/", {
           .then((response) => {
             //ajoute tous les sinistres du client connecté
             for (let i = 0; i < response.message.result.length; i++) {
-              arrSinistresID.push(response.message.result[i].id_sin);
+              if (response.message.result[i].etat_sin == 'En cours') {
 
-              var elementP_Ref = document.createElement("p");
-              var refSinistre = document.createTextNode(
-                response.message.result[i].reference_sin
-              );
-              elementP_Ref.appendChild(refSinistre);
-              elementP_Ref.setAttribute("id", `ref_${i}`);
-              colRef.appendChild(elementP_Ref);
-
-              var elementP_Date = document.createElement("p");
-              var dateSinistre = document.createTextNode(
-                response.message.result[i].date_sin
-              );
-              elementP_Date.appendChild(dateSinistre);
-              colDate.appendChild(elementP_Date);
-
-              var elementP_Etat = document.createElement("p");
-              var etatSinistre = document.createTextNode(
-                response.message.result[i].etat_sin
-              );
-              elementP_Etat.appendChild(etatSinistre);
-              colEtat.appendChild(elementP_Etat);
+                arrSinistresID.push(response.message.result[i].id_sin);
+  
+                var elementP_Ref = document.createElement("p");
+                var refSinistre = document.createTextNode(
+                  response.message.result[i].reference_sin
+                );
+                elementP_Ref.appendChild(refSinistre);
+                elementP_Ref.setAttribute("id", `ref_${i}`);
+                colRef.appendChild(elementP_Ref);
+  
+                // Ajouter les styles pour l'élément p
+                elementP_Ref.style.cursor = "pointer";
+  
+                elementP_Ref.addEventListener("mouseover", function () {
+                  elementP_Ref.style.color = "white";
+                });
+  
+                elementP_Ref.addEventListener("mouseout", function () {
+                  elementP_Ref.style.color = "";
+                });
+  
+                var elementP_Date = document.createElement("p");
+                var dateSinistre = document.createTextNode(
+                  response.message.result[i].date_sin
+                );
+                elementP_Date.appendChild(dateSinistre);
+                colDate.appendChild(elementP_Date);
+  
+                var elementP_Etat = document.createElement("p");
+                var etatSinistre = document.createTextNode(
+                  response.message.result[i].etat_sin
+                );
+                elementP_Etat.appendChild(etatSinistre);
+                colEtat.appendChild(elementP_Etat);
+              }
             }
             var refSinList = document
               .querySelector("#ref")
               .querySelectorAll("p");
 
-              console.log(modifEnCours);
-              //affiche les informations du sinistre sur lequel l'utilisateur clique
-              refSinList.forEach((element) => {
-                element.addEventListener("click", (e) => {
-                  if (modifEnCours == false) {
-                  
+            //affiche les informations du sinistre sur lequel l'utilisateur clique
+            refSinList.forEach((element) => {
+              element.addEventListener("click", (e) => {
+                if (modifEnCours == false) {
                   //on affiche les boutons modifier et ajout photo
                   boutonModifDonnees.style.display = "";
                   formNouvellePhoto.style.display = "";
-                  
+
                   //on met la référence du sinistre en cours de consultation dans le fieldset
-                  console.log(e.target);
-                  document.querySelector('legend').innerHTML = `Référence sinistre : ${e.target.innerHTML}`
+                  document.querySelector(
+                    "legend"
+                  ).innerHTML = `Référence sinistre : ${e.target.innerHTML}`;
                   //on commence par supprimer les détails de sinistre ajoutés lors de précédents clics si nécessaire
-                  while (infoSinistreDetail.firstChild && infoSinistreDetail.lastChild != document.querySelector('legend')) {
+                  while (
+                    infoSinistreDetail.firstChild &&
+                    infoSinistreDetail.lastChild !=
+                      document.querySelector("legend")
+                  ) {
                     infoSinistreDetail.removeChild(
                       infoSinistreDetail.lastChild
                     );
@@ -148,11 +141,10 @@ fetch("http://localhost:3000/api/clients/", {
                       }))
                       .then((response) => {
                         //<--- AJOUTE LES ELEMENTS QUAND ON CLIQUE SUR UNE REF DE SINISTRE --->
-                        //ajoute la rue
                         var elementP_DetailSinRue = document.createElement("p");
                         var elementInput_DetailSinRue =
                           document.createElement("input");
-                        elementP_DetailSinRue.innerHTML = "Rue : ";
+                        elementP_DetailSinRue.innerHTML = "Rue";
                         elementInput_DetailSinRue.type = "text";
                         elementInput_DetailSinRue.value = `${response.message.result.rue_sin}`;
                         elementInput_DetailSinRue.setAttribute("disabled", "");
@@ -161,17 +153,30 @@ fetch("http://localhost:3000/api/clients/", {
                           "id",
                           "DetailSinRue"
                         );
-                        infoSinistreDetail.appendChild(elementP_DetailSinRue);
-                        elementP_DetailSinRue.appendChild(
-                          elementInput_DetailSinRue
+                        elementInput_DetailSinRue.classList.add(
+                          "form-control",
+                          "mx-auto"
                         );
+                        elementInput_DetailSinRue.style.maxWidth = "35%";
+
+                        var formGroup = document.createElement("div");
+                        formGroup.classList.add("form-group", "text-center");
+                        formGroup.appendChild(elementP_DetailSinRue);
+                        formGroup.appendChild(elementInput_DetailSinRue);
+
+                        var container = document.createElement("div");
+                        container.classList.add("container");
+                        container.appendChild(formGroup);
+
+                        infoSinistreDetail.appendChild(container);
+
                         disabledElements.push(elementInput_DetailSinRue.id);
 
                         //ajoute le code postal
                         var elementP_DetailSinCP = document.createElement("p");
                         var elementInput_DetailSinCP =
                           document.createElement("input");
-                        elementP_DetailSinCP.innerHTML = "Code postal : ";
+                        elementP_DetailSinCP.innerHTML = "Code postal";
                         elementInput_DetailSinCP.type = "text";
                         elementInput_DetailSinCP.value = `${response.message.result.cp_sin}`;
                         elementInput_DetailSinCP.setAttribute("disabled", "");
@@ -180,10 +185,23 @@ fetch("http://localhost:3000/api/clients/", {
                           "id",
                           "DetailSinCP"
                         );
-                        infoSinistreDetail.appendChild(elementP_DetailSinCP);
-                        elementP_DetailSinCP.appendChild(
-                          elementInput_DetailSinCP
+                        elementInput_DetailSinCP.classList.add(
+                          "form-control",
+                          "mx-auto"
                         );
+                        elementInput_DetailSinCP.style.maxWidth = "35%";
+
+                        var formGroupCP = document.createElement("div");
+                        formGroupCP.classList.add("form-group", "text-center");
+                        formGroupCP.appendChild(elementP_DetailSinCP);
+                        formGroupCP.appendChild(elementInput_DetailSinCP);
+
+                        var containerCP = document.createElement("div");
+                        containerCP.classList.add("container");
+                        containerCP.appendChild(formGroupCP);
+
+                        infoSinistreDetail.appendChild(containerCP);
+
                         disabledElements.push(elementInput_DetailSinCP.id);
 
                         //ajoute la ville
@@ -191,7 +209,7 @@ fetch("http://localhost:3000/api/clients/", {
                           document.createElement("p");
                         var elementInput_DetailSinVille =
                           document.createElement("input");
-                        elementP_DetailSinVille.innerHTML = "Ville : ";
+                        elementP_DetailSinVille.innerHTML = "Ville";
                         elementInput_DetailSinVille.type = "text";
                         elementInput_DetailSinVille.value = `${response.message.result.ville_sin}`;
                         elementInput_DetailSinVille.setAttribute(
@@ -203,10 +221,26 @@ fetch("http://localhost:3000/api/clients/", {
                           "id",
                           "DetailSinVille"
                         );
-                        infoSinistreDetail.appendChild(elementP_DetailSinVille);
-                        elementP_DetailSinVille.appendChild(
-                          elementInput_DetailSinVille
+                        elementInput_DetailSinVille.classList.add(
+                          "form-control",
+                          "mx-auto"
                         );
+                        elementInput_DetailSinVille.style.maxWidth = "35%";
+
+                        var formGroupVille = document.createElement("div");
+                        formGroupVille.classList.add(
+                          "form-group",
+                          "text-center"
+                        );
+                        formGroupVille.appendChild(elementP_DetailSinVille);
+                        formGroupVille.appendChild(elementInput_DetailSinVille);
+
+                        var containerVille = document.createElement("div");
+                        containerVille.classList.add("container");
+                        containerVille.appendChild(formGroupVille);
+
+                        infoSinistreDetail.appendChild(containerVille);
+
                         disabledElements.push(elementInput_DetailSinVille.id);
 
                         //ajoute le dommage corporel
@@ -214,7 +248,8 @@ fetch("http://localhost:3000/api/clients/", {
                           document.createElement("label");
                         elementLabel_DetailSinDmgCorpo.for = "DmgCorp";
                         elementLabel_DetailSinDmgCorpo.innerHTML =
-                          "Dommage corporel : ";
+                          "Dommage corporel :";
+
                         var elementSelect_DetailSinDmgCorpo =
                           document.createElement("select");
                         elementSelect_DetailSinDmgCorpo.setAttribute(
@@ -225,41 +260,68 @@ fetch("http://localhost:3000/api/clients/", {
                           "id",
                           "DmgCorp"
                         );
+                        elementSelect_DetailSinDmgCorpo.classList.add(
+                          "form-control",
+                          "mx-auto"
+                        );
+                        elementSelect_DetailSinDmgCorpo.style.width = "50%";
+
                         var elementOption1_DetailDmgCorpo =
                           document.createElement("option");
                         var elementOption2_DetailDmgCorpo =
                           document.createElement("option");
-                        elementOption1_DetailDmgCorpo.value = `${(response.message.result.dommage_corporel_sin =
-                          true ? "oui" : "non")}`;
-                        elementOption1_DetailDmgCorpo.innerHTML = `${(response.message.result.dommage_corporel_sin =
-                          true ? "oui" : "non")}`;
+                        elementOption1_DetailDmgCorpo.value = response.message
+                          .result.dommage_corporel_sin
+                          ? "oui"
+                          : "non";
+                        elementOption1_DetailDmgCorpo.innerHTML = response
+                          .message.result.dommage_corporel_sin
+                          ? "oui"
+                          : "non";
                         elementOption1_DetailDmgCorpo.setAttribute(
                           "selected",
                           ""
                         );
-                        elementOption2_DetailDmgCorpo.value = `${(response.message.result.dommage_corporel_sin =
-                          true ? "non" : "oui")}`;
-                        elementOption2_DetailDmgCorpo.innerHTML = `${(response.message.result.dommage_corporel_sin =
-                          true ? "non" : "oui")}`;
-                        infoSinistreDetail.appendChild(
+                        elementOption2_DetailDmgCorpo.value = response.message
+                          .result.dommage_corporel_sin
+                          ? "non"
+                          : "oui";
+                        elementOption2_DetailDmgCorpo.innerHTML = response
+                          .message.result.dommage_corporel_sin
+                          ? "non"
+                          : "oui";
+
+                        var formGroupDmg = document.createElement("div");
+                        formGroupDmg.classList.add("form-group", "text-center");
+                        formGroupDmg.appendChild(
                           elementLabel_DetailSinDmgCorpo
                         );
-                        infoSinistreDetail.appendChild(
+                        formGroupDmg.appendChild(
                           elementSelect_DetailSinDmgCorpo
                         );
+
+                        var containerDmg = document.createElement("div");
+                        containerDmg.classList.add(
+                          "container",
+                          "d-flex",
+                          "justify-content-center"
+                        );
+                        containerDmg.appendChild(formGroupDmg);
+
+                        infoSinistreDetail.appendChild(containerDmg);
+
                         elementSelect_DetailSinDmgCorpo.appendChild(
                           elementOption1_DetailDmgCorpo
                         );
                         elementSelect_DetailSinDmgCorpo.appendChild(
                           elementOption2_DetailDmgCorpo
                         );
+
                         disabledElements.push(
                           elementSelect_DetailSinDmgCorpo.id
                         );
 
                         //ajoute un saut de ligne
-                        var elementBr = document.createElement("br");
-                        infoSinistreDetail.appendChild(elementBr);
                         var elementBr = document.createElement("br");
                         infoSinistreDetail.appendChild(elementBr);
 
@@ -269,6 +331,7 @@ fetch("http://localhost:3000/api/clients/", {
                         elementLabel_DetailSinResp.for = "Resp";
                         elementLabel_DetailSinResp.innerHTML =
                           "Accident responsable : ";
+
                         var elementSelect_DetailSinResp =
                           document.createElement("select");
                         elementSelect_DetailSinResp.setAttribute(
@@ -276,41 +339,89 @@ fetch("http://localhost:3000/api/clients/", {
                           ""
                         );
                         elementSelect_DetailSinResp.setAttribute("id", "Resp");
+                        elementSelect_DetailSinResp.classList.add(
+                          "form-control",
+                          "mx-auto"
+                        );
+                        elementSelect_DetailSinResp.style.width = "50%";
+
                         var elementOption1_DetailResp =
                           document.createElement("option");
                         var elementOption2_DetailResp =
                           document.createElement("option");
-                        elementOption1_DetailResp.value = `${(response.message.result.responsable_sin =
-                          true ? "oui" : "non")}`;
-                        elementOption1_DetailResp.innerHTML = `${(response.message.result.responsable_sin =
-                          true ? "oui" : "non")}`;
+
+                        elementOption1_DetailResp.value = response.message
+                          .result.responsable_sin
+                          ? "oui"
+                          : "non";
+                        elementOption1_DetailResp.innerHTML = response.message
+                          .result.responsable_sin
+                          ? "oui"
+                          : "non";
                         elementOption1_DetailResp.setAttribute("selected", "");
-                        elementOption2_DetailResp.value = `${(response.message.result.responsable_sin =
-                          true ? "non" : "oui")}`;
-                        elementOption2_DetailResp.innerHTML = `${(response.message.result.responsable_sin =
-                          true ? "non" : "oui")}`;
-                        infoSinistreDetail.appendChild(
-                          elementLabel_DetailSinResp
+
+                        elementOption2_DetailResp.value = response.message
+                          .result.responsable_sin
+                          ? "non"
+                          : "oui";
+                        elementOption2_DetailResp.innerHTML = response.message
+                          .result.responsable_sin
+                          ? "non"
+                          : "oui";
+
+                        var formGroupResp = document.createElement("div");
+                        formGroupResp.classList.add(
+                          "form-group",
+                          "text-center"
                         );
-                        infoSinistreDetail.appendChild(
-                          elementSelect_DetailSinResp
+                        formGroupResp.appendChild(elementLabel_DetailSinResp);
+                        formGroupResp.appendChild(elementSelect_DetailSinResp);
+
+                        var containerResp = document.createElement("div");
+                        containerResp.classList.add(
+                          "container",
+                          "d-flex",
+                          "justify-content-center"
                         );
+                        containerResp.appendChild(formGroupResp);
+
+                        infoSinistreDetail.appendChild(containerResp);
+
                         elementSelect_DetailSinResp.appendChild(
                           elementOption1_DetailResp
                         );
                         elementSelect_DetailSinResp.appendChild(
                           elementOption2_DetailResp
                         );
+
                         disabledElements.push(elementSelect_DetailSinResp.id);
 
                         //ajoute le commentaire envoyé
+                        var elementDiv_DetailSinCommentaire =
+                          document.createElement("div");
+                        elementDiv_DetailSinCommentaire.classList.add(
+                          "container",
+                          "d-flex",
+                          "justify-content-center",
+                          "flex-column",
+                          "align-items-center"
+                        );
+
                         var elementP_DetailSinCommentaire =
                           document.createElement("p");
-                        var elementInput_DetailSinCommentaire =
-                          document.createElement("input");
                         elementP_DetailSinCommentaire.innerHTML =
                           "Commentaire envoyé : ";
+                        elementP_DetailSinCommentaire.classList.add(
+                          "text-center"
+                        );
+
+                        var elementInput_DetailSinCommentaire =
+                          document.createElement("input");
                         elementInput_DetailSinCommentaire.type = "text";
+                        elementInput_DetailSinCommentaire.classList.add(
+                          "form-control",
+                          "text-center"
+                        );
                         elementInput_DetailSinCommentaire.value = `${
                           response.message.result.commentaire_sin == null
                             ? ""
@@ -321,19 +432,21 @@ fetch("http://localhost:3000/api/clients/", {
                           ""
                         );
                         elementInput_DetailSinCommentaire.setAttribute(
-                          "size",
-                          "50"
-                        );
-                        elementInput_DetailSinCommentaire.setAttribute(
                           "id",
                           "DetailSinCommentaire"
                         );
-                        infoSinistreDetail.appendChild(
+
+                        elementDiv_DetailSinCommentaire.appendChild(
                           elementP_DetailSinCommentaire
                         );
-                        elementP_DetailSinCommentaire.appendChild(
+                        elementDiv_DetailSinCommentaire.appendChild(
                           elementInput_DetailSinCommentaire
                         );
+
+                        infoSinistreDetail.appendChild(
+                          elementDiv_DetailSinCommentaire
+                        );
+
                         disabledElements.push(
                           elementInput_DetailSinCommentaire.id
                         );
@@ -360,27 +473,37 @@ fetch("http://localhost:3000/api/clients/", {
                                 j < response.message.result.length;
                                 j++
                               ) {
-
                                 //ajoute une image
+                                var elementDiv = document.createElement("div");
+                                elementDiv.style.position = "relative";
+                                elementDiv.style.width = "auto";
+                                elementDiv.style.margin = "10px"
+                                elementDiv.classList.add(
+                                  "d-inline-flex",
+                                  "justify-content-center"
+                                );
+                                infoSinistreDetail.appendChild(elementDiv);
+
+                                // Ajoute une photo
                                 var elementImg_DetailSinPhotos =
                                   document.createElement("img");
                                 elementImg_DetailSinPhotos.setAttribute(
                                   "id",
                                   `imgView${response.message.result[j].id_pho}`
                                 );
-                                elementImg_DetailSinPhotos.setAttribute(
-                                  "width",
-                                  "100"
+                                elementImg_DetailSinPhotos.classList.add(
+                                  "img-fluid"
                                 );
-                                elementImg_DetailSinPhotos.setAttribute(
-                                  "height",
-                                  "100"
-                                );
-                                infoSinistreDetail.appendChild(
+                                elementImg_DetailSinPhotos.style.width =
+                                  "200px";
+                                elementImg_DetailSinPhotos.style.height =
+                                  "200px";
+
+                                elementDiv.appendChild(
                                   elementImg_DetailSinPhotos
                                 );
 
-                                //ajoute un bouton delete
+                                // Ajoute un bouton delete sur les photos
                                 var elementInput_BtnDeletePhotos =
                                   document.createElement("input");
                                 elementInput_BtnDeletePhotos.type = "button";
@@ -401,7 +524,12 @@ fetch("http://localhost:3000/api/clients/", {
                                   "id",
                                   `BtnDeletePhotos${response.message.result[j].id_pho}`
                                 );
-                                infoSinistreDetail.appendChild(
+                                elementInput_BtnDeletePhotos.classList.add(
+                                  "position-absolute"
+                                );
+                                elementInput_BtnDeletePhotos.style.top = "0";
+                                elementInput_BtnDeletePhotos.style.right = "0";
+                                elementDiv.appendChild(
                                   elementInput_BtnDeletePhotos
                                 );
                                 disabledElements.push(
@@ -438,7 +566,6 @@ fetch("http://localhost:3000/api/clients/", {
                               }
                             });
                         });
-                        // ajoute un bouton pour upload des photos supplémentaires
                       });
                   });
                 } else {
@@ -446,8 +573,8 @@ fetch("http://localhost:3000/api/clients/", {
                     "Merci d'annuler les modifications avant de sélectionner un autre sinistre"
                   );
                 }
-                });
               });
+            });
           });
       });
     });
@@ -456,12 +583,8 @@ var arrImgSinElements = [];
 var addedElements = disabledElements;
 //fait disparaitre le bouton modifier les données et ajoute le bouton sauvegarder les modifications
 boutonModifDonnees.addEventListener("click", (e) => {
-
-  
-
   e.preventDefault();
-  modifEnCours = true
-  console.log(modifEnCours);
+  modifEnCours = true;
   boutonModifDonnees.style.display = "none";
   if (document.querySelector("#saveModif") == null) {
     var elementInput_BtnSaveModifs = document.createElement("input");
@@ -482,9 +605,9 @@ boutonModifDonnees.addEventListener("click", (e) => {
       .appendChild(elementInput_BtnAnnuleModifs);
   }
 
-  elementInput_BtnAnnuleModifs.addEventListener('click', (e) => {
+  elementInput_BtnAnnuleModifs.addEventListener("click", (e) => {
     location.reload();
-  })
+  });
 
   //active tous les éléments pour pouvoir les modifier
   disabledElements.forEach((element) => {
@@ -496,7 +619,6 @@ boutonModifDonnees.addEventListener("click", (e) => {
   });
   arrImgSinElements.forEach((element) => {
     element.addEventListener("click", (e) => {
-
       var getIDPhoFromDeleteBtn = e.target.id.substring(
         e.target.id.indexOf("s") + 1
       );
@@ -537,8 +659,7 @@ boutonModifDonnees.addEventListener("click", (e) => {
             message: message,
             status: response.status,
           }))
-          .then((response) => {
-          });
+          .then((response) => {});
       });
     }
     var inputData;
@@ -559,8 +680,7 @@ boutonModifDonnees.addEventListener("click", (e) => {
           message: message,
           status: response.status,
         }))
-        .then((response) => {
-        });
+        .then((response) => {});
     });
 
     //enregistre la modification du code postal
@@ -580,8 +700,7 @@ boutonModifDonnees.addEventListener("click", (e) => {
           message: message,
           status: response.status,
         }))
-        .then((response) => {
-        });
+        .then((response) => {});
     });
 
     //enregistre la modification de la ville
@@ -604,8 +723,7 @@ boutonModifDonnees.addEventListener("click", (e) => {
           message: message,
           status: response.status,
         }))
-        .then((response) => {
-        });
+        .then((response) => {});
     });
 
     //enregistre la màj du dommage corporel
@@ -630,8 +748,7 @@ boutonModifDonnees.addEventListener("click", (e) => {
           message: message,
           status: response.status,
         }))
-        .then((response) => {
-        });
+        .then((response) => {});
     });
 
     //enregistre la modification de la responsabilité
@@ -656,8 +773,7 @@ boutonModifDonnees.addEventListener("click", (e) => {
           message: message,
           status: response.status,
         }))
-        .then((response) => {
-        });
+        .then((response) => {});
     });
     //enregistre la modification du commentaire
     const selectCommentaireElement = document.getElementById(
@@ -681,15 +797,12 @@ boutonModifDonnees.addEventListener("click", (e) => {
           message: message,
           status: response.status,
         }))
-        .then((response) => {
-        });
+        .then((response) => {});
     });
-    alert('Vos modification ont bien été enregistrées')
+    alert("Vos modification ont bien été enregistrées");
     location.reload();
   });
 });
-
-
 
 boutonNouvellePhoto.addEventListener("change", (e) => {
   const file = e.target.files[0];

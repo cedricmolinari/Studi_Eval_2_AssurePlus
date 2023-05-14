@@ -177,6 +177,7 @@ elSelectSinistre.addEventListener("change", (event) => {
                 );
                 elementImg_DetailSinPhotos.setAttribute("width", "300");
                 elementImg_DetailSinPhotos.setAttribute("height", "300");
+                elementImg_DetailSinPhotos.style.margin = "10px"
                 document
                   .querySelector("#lignePhotoSin")
                   .appendChild(elementImg_DetailSinPhotos);
@@ -304,5 +305,6 @@ document.querySelector('#submitModifs').addEventListener('click', () => {
       })
     }
     alert('Modification effectuée !')
+    location.reload();
 
 })
