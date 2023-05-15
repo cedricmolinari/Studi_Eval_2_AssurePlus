@@ -14,6 +14,7 @@ var arrSinistreIDSelect = [];
 var arrPhotosID = [];
 var clientID;
 var modifEnCours = false;
+let j = -1;
 
 document.addEventListener("DOMContentLoaded", function () {
   const bandeauConnexion = sessionStorage.getItem("bandeauConnexion");
@@ -57,37 +58,50 @@ fetch("http://localhost:3000/api/clients/", {
           }))
           .then((response) => {
             //ajoute tous les sinistres du client connecté
-            for (let i = 0; i < response.message.result.length; i++) {
-              if (response.message.result[i].etat_sin == 'En cours') {
+            function createMouseOverHandler(element) {
+              return function () {
+                element.style.color = "white";
+              };
+            }
 
+            function createMouseOutHandler(element) {
+              return function () {
+                element.style.color = "";
+              };
+            }
+
+            for (let i = 0; i < response.message.result.length; i++) {
+              if (response.message.result[i].etat_sin == "En cours") {
+                j = j + 1;
                 arrSinistresID.push(response.message.result[i].id_sin);
-  
+
                 var elementP_Ref = document.createElement("p");
                 var refSinistre = document.createTextNode(
                   response.message.result[i].reference_sin
                 );
                 elementP_Ref.appendChild(refSinistre);
-                elementP_Ref.setAttribute("id", `ref_${i}`);
+                elementP_Ref.setAttribute("id", `ref_${j}`);
                 colRef.appendChild(elementP_Ref);
-  
+
                 // Ajouter les styles pour l'élément p
                 elementP_Ref.style.cursor = "pointer";
-  
-                elementP_Ref.addEventListener("mouseover", function () {
-                  elementP_Ref.style.color = "white";
-                });
-  
-                elementP_Ref.addEventListener("mouseout", function () {
-                  elementP_Ref.style.color = "";
-                });
-  
+
+                elementP_Ref.addEventListener(
+                  "mouseover",
+                  createMouseOverHandler(elementP_Ref)
+                );
+                elementP_Ref.addEventListener(
+                  "mouseout",
+                  createMouseOutHandler(elementP_Ref)
+                );
+
                 var elementP_Date = document.createElement("p");
                 var dateSinistre = document.createTextNode(
                   response.message.result[i].date_sin
                 );
                 elementP_Date.appendChild(dateSinistre);
                 colDate.appendChild(elementP_Date);
-  
+
                 var elementP_Etat = document.createElement("p");
                 var etatSinistre = document.createTextNode(
                   response.message.result[i].etat_sin
@@ -96,6 +110,7 @@ fetch("http://localhost:3000/api/clients/", {
                 colEtat.appendChild(elementP_Etat);
               }
             }
+
             var refSinList = document
               .querySelector("#ref")
               .querySelectorAll("p");
@@ -451,6 +466,59 @@ fetch("http://localhost:3000/api/clients/", {
                           elementInput_DetailSinCommentaire.id
                         );
 
+                        //ajoute le commentaire référent
+                        var elementDiv_DetailSinCommentaireRef =
+                          document.createElement("div");
+                          elementDiv_DetailSinCommentaireRef.classList.add(
+                          "container",
+                          "d-flex",
+                          "justify-content-center",
+                          "flex-column",
+                          "align-items-center"
+                        );
+
+                        var elementP_DetailSinCommentaireRef =
+                          document.createElement("p");
+                          elementP_DetailSinCommentaireRef.innerHTML =
+                          "Commentaire référent sinistre : ";
+                          elementP_DetailSinCommentaireRef.classList.add(
+                          "text-center"
+                        );
+
+                        var elementInput_DetailSinCommentaireRef =
+                          document.createElement("input");
+                          elementInput_DetailSinCommentaireRef.type = "text";
+                          elementInput_DetailSinCommentaireRef.classList.add(
+                          "form-control",
+                          "text-center"
+                        );
+                        elementInput_DetailSinCommentaireRef.style.border = "1px solid red";
+
+                        elementInput_DetailSinCommentaireRef.value = `${
+                          response.message.result.commentaire_referent_sin == null
+                            ? ""
+                            : response.message.result.commentaire_referent_sin
+                        }`;
+                        elementInput_DetailSinCommentaireRef.setAttribute(
+                          "disabled",
+                          ""
+                        );
+                        elementInput_DetailSinCommentaireRef.setAttribute(
+                          "id",
+                          "DetailSinCommentaireRef"
+                        );
+
+                        elementDiv_DetailSinCommentaireRef.appendChild(
+                          elementP_DetailSinCommentaireRef
+                        );
+                        elementDiv_DetailSinCommentaireRef.appendChild(
+                          elementInput_DetailSinCommentaireRef
+                        );
+
+                        infoSinistreDetail.appendChild(
+                          elementDiv_DetailSinCommentaireRef
+                        );
+
                         //ajoute les photos
                         fetch(
                           `http://localhost:3000/api/declarations/multiple-images/get/${response.message.result.id_sin}`,
@@ -477,7 +545,7 @@ fetch("http://localhost:3000/api/clients/", {
                                 var elementDiv = document.createElement("div");
                                 elementDiv.style.position = "relative";
                                 elementDiv.style.width = "auto";
-                                elementDiv.style.margin = "10px"
+                                elementDiv.style.margin = "10px";
                                 elementDiv.classList.add(
                                   "d-inline-flex",
                                   "justify-content-center"

@@ -13,13 +13,6 @@ import { Strategy as LocalStrategy } from 'passport-local';
 import bcrypt from 'bcrypt';
 import bodyParser from 'body-parser';
 dotenv.config()
-console.log(process.env.user);
-// installer les librairies jsonwebtoken et express-jwt dans le projet pour gérer les accès à l'API en fonction du profil utilisateur
-// cours STUDI/Accueil/Médiathèque/Développement d'une solution digitale avec Java/Concevoir une API/Gérer les accès à une API
-
-// protéger la BDD des injections SQL avec le package node-pg-format
-
-
 
 const { Client } = pkg;
 const pgsql = new Client({
@@ -39,13 +32,6 @@ const __dirname = dirname(__filename);
 const app = express()
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-/* app.use(express.static('public')); // Serveur de fichiers statiques
-
-app.get('/Sinistre/sinistre.html', (req, res) => {
-  const num_clt = req.query.num_clt;
-  res.send(`<h1>Bienvenue, ${num_clt} !</h1>`);
-}); */
 
 app.use(express.static(__dirname));
 
@@ -94,7 +80,6 @@ import { success, error } from './functions.js';
     }
 
     const customLocalStrategy = (req, username, password, done) => {
-      //console.log(customLocalStrategy);
       (async () => {
         try {
           const user = await findUserByUsername(req.body.utilisateur_ut);
@@ -117,8 +102,8 @@ import { success, error } from './functions.js';
     
     passport.use(new LocalStrategy({
       passReqToCallback: true,
-      usernameField: 'utilisateur_ut', // Assurez-vous d'utiliser le bon nom de champ pour l'identifiant
-      passwordField: 'password_ut' // Assurez-vous d'utiliser le bon nom de champ pour le mot de passe
+      usernameField: 'utilisateur_ut',
+      passwordField: 'password_ut'
     }, customLocalStrategy));
   
     
@@ -127,8 +112,6 @@ import { success, error } from './functions.js';
         if (err) {
           return next(err);
         }
-        //console.log(user);
-        //console.log(info);
         if (!user) {
           return res.status(401).json({ message: info.message });
         }
@@ -159,7 +142,6 @@ import { success, error } from './functions.js';
       }
     });
     app.use((req, res, next) => {
-      console.log('Session data:', req.session);
       next();
     });
           
@@ -167,14 +149,12 @@ import { success, error } from './functions.js';
       
       //affiche la page d'accueil
       .get((req, res) => {
-          console.log('pas referent');
           res.sendFile(__dirname + "/Accueil/accueil.html");
       });
     
     TestRouter.route('/Accueil/accueil.html')
 
       .get((req, res) => {
-        console.log('pas referent');
         res.sendFile(__dirname + "/Accueil/accueil.html");
       });
     
@@ -195,14 +175,19 @@ import { success, error } from './functions.js';
       .get((req, res) => {
         res.sendFile(__dirname + `/Sinistre/sinistre.html`);
       });
+    
+    TestRouter.route('/api/numero-clt/clients/:num_clt')
 
-    /* TestRouter.route('/Sinistre/sinistre.html')
-      //affiche la page de connexion
-      .post((req, res) => {
-        const num_clt = req.query.num_clt;
-        res.sendFile(__dirname + `/Sinistre/sinistre.html?num_clt=${num_clt}`);
-      }); */
-      
+    // Récupère un client via son num_clt
+    .get((req, res) => {
+      pgsql.query('SELECT * FROM "Clients" WHERE num_clt = $1', [req.params.num_clt], (err, result) => {
+        if (err) {
+        res.json(error(err.message))
+        } else {
+        res.json(result.rows)
+        }
+    })
+    })
 
     TestRouter.route('/api/clients')
 
@@ -277,7 +262,6 @@ import { success, error } from './functions.js';
           } else {
             const json = result.rows[0].mdp_clt;
             const obj = JSON.parse(json);
-            console.log(obj);
               res.json(success(
                 {num_clt: result.rows[0].num_clt,
                 mdp_clt: decryptPassword(obj, 'Plouf@54150?')}));
@@ -292,13 +276,9 @@ import { success, error } from './functions.js';
         pgsql.query(`SELECT num_clt, mdp_clt FROM \"Clients\" WHERE num_clt = $1;`, [req.body.num_clt], (err, result) => {
           const json = result.rows[0].mdp_clt;
           const obj = JSON.parse(json);
-          console.log(obj);
-          
-          console.log(decryptPassword(obj, req.body.mdp_clt))
           if (err) {
             res.json(error(err.message))
           } else {
-            //console.log(result);
             res.status(200).json(success(
               {num_clt: result.rows[0].num_clt,
                 mdp_clt : decryptPassword(obj, req.body.mdp_clt)}));
@@ -309,7 +289,7 @@ import { success, error } from './functions.js';
       //enregistre la déclaration de sinistre d'un client
       .post((req, res) => {
         var sql = 'INSERT INTO "Sinistres"(reference_sin, date_sin, immat_sin, dommage_corporel_sin, responsable_sin, rue_sin, ville_sin, cp_sin, commentaire_sin, client_id, etat_sin) \
-                            SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, \'en cours\';';
+                            SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, \'En cours\';';
         pgsql.query(sql, [req.body.reference_sin, req.body.date_sin, req.body.immat_sin, req.body.dommage_corporel_sin, req.body.responsable_sin, req.body.rue_sin, req.body.ville_sin, req.body.cp_sin, req.body.commentaire_sin, req.params.client_id])
           if (err) {
             res.json(error(err.message))
@@ -320,7 +300,6 @@ import { success, error } from './functions.js';
     
     TestRouter.route('/api/declarations/single-formulaire/')
     .post(function(request, response, next) {
-        console.log('coucou');
         var filename;
         var storage = multer.diskStorage({
             destination: function(request, file, callback) {
@@ -337,7 +316,6 @@ import { success, error } from './functions.js';
           var upload = multer({storage:storage}).single('document_form');
           upload(request, response, function(error) {
             if (error) {
-                console.log(error);
                 return response.end('Error Uploading File');
             } else {
               //let dateNow = new Date(Date.now()).toLocaleString().split(',')[0]
@@ -382,7 +360,6 @@ import { success, error } from './functions.js';
                       WHERE sin.id_sin = (SELECT id_sin FROM "Sinistres" ORDER BY id_sin DESC limit 1)`;                 
                     pgsql.query(sqlPho)
                   } else {
-                    //return response.end(`Photo ${file[i].filename} trop volumineuse (limite : 2 mo)`);
                     arrError.push({"message":`${file[i].filename}`})
                   }
                 }
@@ -421,13 +398,8 @@ import { success, error } from './functions.js';
                     var sqlNbPho = 
                     `SELECT COUNT(*) FROM "Photos" WHERE sinistre_id = $1;`
                     pgsql.query(sqlNbPho, [request.params.sinistre_id], (err, result) => {
-                      console.log(result.rows[0].count);
                       if ((((file[i].size/1024)/1024).toFixed(4) > 2)) {
                         response.json(error(`La photo ${file[i].filename} trop volumineuse (limite : 2 mo)`))
-/*                         arrError.push({"message":`${file[i].filename}`})
-                        response.send({
-                          arrError
-                        }) */
                       } else {
 
                         if (result.rows[0].count > 4) {

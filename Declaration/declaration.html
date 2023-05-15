@@ -24,11 +24,11 @@
         min-height: 100vh;
         flex-direction: column;
         background: linear-gradient(to bottom, #a6a6a6, #ffffff);
-        margin-bottom: 60px; /* Ajoutez la hauteur du footer ici */
+        margin-bottom: 60px;
       }
       .content-wrapper {
         flex-grow: 1;
-        margin-bottom: 100px; /* Ajoutez la hauteur du footer ici */
+        margin-bottom: 100px;
       }
       input,
       select {
@@ -46,7 +46,7 @@
         justify-content: center;
         align-items: flex-end;
         margin: 0;
-        transition: opacity 0.3s ease; /* smooth transition */
+        transition: opacity 0.3s ease;
       }
       footer {
         position: relative;
@@ -56,15 +56,15 @@
         display: flex;
         justify-content: center;
         align-items: flex-end;
-        transition: opacity 0.3s ease; /* smooth transition */
+        transition: opacity 0.3s ease;
       }
       footer::after {
-        position: absolute; /* Cover the entire footer */
+        position: absolute;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        transition: opacity 0.3s ease; /* Smooth transition */
+        transition: opacity 0.3s ease;
       }
     </style>
   </head>
@@ -191,7 +191,7 @@
           <br />
         </fieldset>
       </form>
-      <form class="formMultipleImg" enctype="multipart/form-data">
+      <form class="formMultipleImg" enctype="multipart/form-data" style="display: none;">
         <fieldset class="border border-secondary p-2">
           <legend class="text-secondary font-weight-bold">Photo(s)</legend>
           <div class="form-group text-center" id="divMlpPhoto">
@@ -207,12 +207,12 @@
           <br />
           <div style="text-align: center; justify-content: center">
             <button type="submit" class="btn btn-primary">
-              Envoyer la photo
+              Ajouter des photos
             </button>
           </div>
         </fieldset>
       </form>
-      <form class="formFormulaire" enctype="multipart/form-data">
+      <form class="formFormulaire" enctype="multipart/form-data" style="display: none;">
         <fieldset class="border border-secondary p-2">
           <legend class="text-secondary font-weight-bold">Formulaire</legend>
           <div class="form-group text-center" id="divFormulaire">

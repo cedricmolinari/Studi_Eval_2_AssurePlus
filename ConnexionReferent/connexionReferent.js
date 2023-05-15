@@ -58,7 +58,6 @@ submitConnectForm.addEventListener('submit', event => {
     
             .then((() => {
                 if (connexion) {
-                    //btnConnexion.setAttribute("onclick", "location.href = 'http://localhost:3000/Sinistre/sinistre.html'")
                     submitConnectForm.submit();
                 } else {
                     btnConnexion.removeAttribute("onclick")

@@ -76,10 +76,6 @@ function checkMailClt(input) {
   }
 }
 
-//mettre en place un hash/salt du mdp quand on le crée en database : 
-  //https://www.makeuseof.com/nodejs-bcrypt-hash-verify-salt-password/
-  //Studi : Accueil/Médiathèque/Développement d'une solution digitale avec Java/Créer et administrer une base de données relationnelle/UP Projet : Créer et administrer une base de données
-
 inscriptionForm.addEventListener('submit', event => {
     event.preventDefault();
     const formData = new FormData(inscriptionForm);

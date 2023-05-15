@@ -11,63 +11,47 @@ function getVal(input) {
   return val;
 }
 
-submitConnectForm.addEventListener("submit", (event) => {
+window.addEventListener("load", () => {
+  const stockageClientID = sessionStorage.getItem("clientID");
+  clientID.push(stockageClientID);
+});
+
+submitConnectForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const formData = new FormData(submitConnectForm);
   const data = Object.fromEntries(formData);
-  console.log(JSON.stringify(data));
 
-  fetch("http://localhost:3000/api/clients/num/", {
-    method: "POST", // or 'PUT'
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  })
-    .then((response) => {
-      response
-        .json()
-        .then((message) => ({
-          message: message,
-          status: response.status,
-        }))
-        .then((response) => {
-          console.log(response.message.result.mdp_clt);
-          connexion = response.message.result.mdp_clt;
-
-          if (!connexion) {
-            // ajout d'un message dans le DOM pour signaler le problème
-            if (document.getElementById("erreurConnexion") == undefined) {
-              var elementP = document.createElement("p");
-              var message = document.createTextNode(
-                "Combinaison client et mot de passe inexistante"
-              );
-              elementP.appendChild(message);
-              elementP.setAttribute("id", "erreurConnexion");
-              var element = document.getElementById("new");
-              element.appendChild(elementP);
-            }
-          } else {
-            console.log("client trouvé !");
-            connexion = true;
-          }
-        })
-
-        .then(() => {
-          if (connexion) {
-            //btnConnexion.setAttribute("onclick", "location.href = 'http://localhost:3000/Sinistre/sinistre.html'")
-            submitConnectForm.submit();
-          } else {
-            btnConnexion.removeAttribute("onclick");
-          }
-        });
-    })
-
-    .catch((error) => {
-      console.error("Error:", error);
+  try {
+    const response = await fetch("http://localhost:3000/api/clients/num/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
     });
 
-    //envoi du numéro client vers le middleware, pour le récupérer sur d'autres pages
-    /* const num_clt = encodeURIComponent(form.num_clt.value);
-    window.location.href = `/Sinistre/sinistre.html?num_clt=${num_clt}`; */
+    const message = await response.json();
+
+    if (message.result && message.result.mdp_clt) {
+      const num_clt = message.result.num_clt;
+      const response2 = await fetch(`http://localhost:3000/api/numero-clt/clients/${num_clt}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const message2 = await response2.json();
+
+      if (message2[0]) {
+        const newClientID = message2[0].id_clt;
+        const newBandeauConnexion = `Bonjour, ${message2[0].nom_clt} ${message2[0].prenom_clt}`;
+        sessionStorage.setItem("clientID", newClientID);
+        sessionStorage.setItem("bandeauConnexion", newBandeauConnexion);
+
+        // Une fois que toutes les opérations ont été résolues, vous pouvez soumettre le formulaire
+        submitConnectForm.submit();
+      }
+    }
+
+  } catch (error) {
+    console.error("Error:", error);
+  }
 });
+
