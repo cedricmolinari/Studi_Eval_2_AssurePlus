@@ -104,10 +104,10 @@ inscriptionForm.addEventListener('submit', event => {
           console.log(response.message);
           if (response.message.message == "Numéro client et/ou adresse mail déjà enregistrée, merci de vous connecter") {
             alert(response.message.message)
-            window.location.href = "../index.js/Connexion/connexion.html";
+            window.location.href = "../Connexion/connexion.html";
           } else if (response.message.result == "Inscription réussie, vous pouvez maintenant vous connecter") {
             alert(response.message.result)
-            window.location.href = "../index.js/Connexion/connexion.html";
+            window.location.href = "../Connexion/connexion.html";
           }
         })
     })

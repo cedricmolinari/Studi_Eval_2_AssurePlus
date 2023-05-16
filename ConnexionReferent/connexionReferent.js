@@ -20,7 +20,7 @@ submitConnectForm.addEventListener('submit', event => {
     console.log(JSON.stringify(data));
 
     
-    fetch('../index.js/api/referents/connexion', {
+    fetch('/api/referents/connexion', {
         method: 'POST', // or 'PUT'
         headers: {
             'Content-Type': 'application/json'

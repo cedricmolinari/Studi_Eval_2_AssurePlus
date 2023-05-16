@@ -22,7 +22,7 @@ submitConnectForm.addEventListener("submit", async (event) => {
   const data = Object.fromEntries(formData);
 
   try {
-    const response = await fetch("https://goldfish-app-2-2cozk.ondigitalocean.app/index.js/api/clients/num/", {
+    const response = await fetch("/api/clients/num/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
@@ -32,7 +32,7 @@ submitConnectForm.addEventListener("submit", async (event) => {
 
     if (message.result && message.result.mdp_clt) {
       const num_clt = message.result.num_clt;
-      const response2 = await fetch(`https://goldfish-app-2-2cozk.ondigitalocean.app/index.js/api/numero-clt/clients/${num_clt}`, {
+      const response2 = await fetch(`/api/numero-clt/clients/${num_clt}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
