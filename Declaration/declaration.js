@@ -103,7 +103,7 @@ declarationForm.addEventListener('submit', event => {
     }
 
     if (declaration) {
-      fetch(`http://localhost:3000/api/declaration/${clientID}`, {
+      fetch(`../index.js/api/declaration/${clientID}`, {
       method: 'POST', // or 'PUT'
       headers: {
           'Content-Type': 'application/json',
@@ -143,7 +143,7 @@ declarationForm.addEventListener('submit', event => {
             bodyFormData.append('image_pho', single_file)
           }
       }
-      fetch('http://localhost:3000/api/declarations/multiple-images/', {
+      fetch('../index.js/api/declarations/multiple-images/', {
         method: 'POST',
         body: bodyFormData,
       })
@@ -170,7 +170,7 @@ declarationForm.addEventListener('submit', event => {
       const file = event.target.document_form.files[0]
       const bodyFormData = new FormData()
       bodyFormData.append('document_form', file)
-      fetch('http://localhost:3000/api/declarations/single-formulaire/', {
+      fetch('../index.js/api/declarations/single-formulaire/', {
         method: 'POST',
         body: bodyFormData,
       })

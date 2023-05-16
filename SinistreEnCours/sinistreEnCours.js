@@ -28,7 +28,7 @@ window.addEventListener("load", () => {
   stockageClientID = sessionStorage.getItem("clientID");
 });
 
-fetch("http://localhost:3000/api/clients/", {
+fetch("../index.js/api/clients/", {
   method: "GET",
   headers: {
     "Content-Type": "application/json",
@@ -44,7 +44,7 @@ fetch("http://localhost:3000/api/clients/", {
       let ID = `${stockageClientID}`;
       infoConnexion.setAttribute("id", ID);
       clientID = infoConnexion.getAttribute("id");
-      fetch(`http://localhost:3000/api/sinistres/consultation/${clientID}`, {
+      fetch(`../index.js/api/sinistres/consultation/${clientID}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -140,7 +140,7 @@ fetch("http://localhost:3000/api/clients/", {
                   arrSinistreIDSelect =
                     arrSinistresID[e.target.id.charAt(e.target.id.length - 1)];
                   fetch(
-                    `http://localhost:3000/api/sinistres/consultation/encours/${arrSinistreIDSelect}`,
+                    `../index.js/api/sinistres/consultation/encours/${arrSinistreIDSelect}`,
                     {
                       method: "GET",
                       headers: {
@@ -521,7 +521,7 @@ fetch("http://localhost:3000/api/clients/", {
 
                         //ajoute les photos
                         fetch(
-                          `http://localhost:3000/api/declarations/multiple-images/get/${response.message.result.id_sin}`,
+                          `../index.js/api/declarations/multiple-images/get/${response.message.result.id_sin}`,
                           {
                             method: "GET",
                             headers: {

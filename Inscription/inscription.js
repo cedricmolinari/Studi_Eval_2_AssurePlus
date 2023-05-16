@@ -88,7 +88,7 @@ inscriptionForm.addEventListener('submit', event => {
     checkMailClt(getVal(inputMailClt))
 
     if (inscription) {
-      fetch('http://localhost:3000/api/clients/', {
+      fetch('../index.js/api/clients/', {
       method: 'POST', // or 'PUT'
       headers: {
           'Content-Type': 'application/json',
@@ -104,10 +104,10 @@ inscriptionForm.addEventListener('submit', event => {
           console.log(response.message);
           if (response.message.message == "Numéro client et/ou adresse mail déjà enregistrée, merci de vous connecter") {
             alert(response.message.message)
-            window.location.href = "http://localhost:3000/Connexion/connexion.html";
+            window.location.href = "../index.js/Connexion/connexion.html";
           } else if (response.message.result == "Inscription réussie, vous pouvez maintenant vous connecter") {
             alert(response.message.result)
-            window.location.href = "http://localhost:3000/Connexion/connexion.html";
+            window.location.href = "../index.js/Connexion/connexion.html";
           }
         })
     })

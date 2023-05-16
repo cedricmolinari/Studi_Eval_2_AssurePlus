@@ -7,7 +7,7 @@ var arrListeSinistres = [];
 
 //au chargement de la page, on charge tous les clients de la BDD
 window.addEventListener("load", (event) => {
-  fetch("http://localhost:3000/api/clients/", {
+  fetch("../index.js/api/clients/", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -54,7 +54,7 @@ elSelectClient.addEventListener("change", (event) => {
       clientID = arrListeClients[0].message[i].id_clt;
     }
   }
-  fetch(`/api/sinistres/consultation/${clientID}`, {
+  fetch(`../index.js/api/sinistres/consultation/${clientID}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -103,7 +103,7 @@ var consultationSin = false;
 elSelectSinistre.addEventListener("change", (event) => {
   consultationSin = true;
   fetch(
-    `http://localhost:3000/api/sinistres/consultation/encours/${event.target.selectedOptions[0].id}`,
+    `../index.js/api/sinistres/consultation/encours/${event.target.selectedOptions[0].id}`,
     {
       method: "GET",
       headers: {
@@ -153,7 +153,7 @@ elSelectSinistre.addEventListener("change", (event) => {
             : response.message.result.commentaire_referent_sin;
         document.querySelector("#lignePhotoSin").innerHTML = ``;
         fetch(
-          `http://localhost:3000/api/declarations/multiple-images/get/${response.message.result.id_sin}`,
+          `../index.js/api/declarations/multiple-images/get/${response.message.result.id_sin}`,
           {
             method: "GET",
             headers: {
@@ -264,7 +264,7 @@ document.querySelector('#submitModifs').addEventListener('click', () => {
 
   var sinistreID = document.querySelector('#menu-sinistres').selectedOptions[0].id
   var inputData = { id_sin: sinistreID, commentaire_referent_sin: valeurComRef}
-  fetch(`/api/referent/put/com-referent/${sinistreID}`, {
+  fetch(`../index.js/api/referent/put/com-referent/${sinistreID}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -287,7 +287,7 @@ document.querySelector('#submitModifs').addEventListener('click', () => {
     var valeurEtatSin = document.querySelector('#etatSin').innerHTML;
     var inputData = { id_sin: sinistreID, etat_sin: valeurEtatSin}
     console.log(inputData);
-    fetch(`/api/referent/put/etat-sinistre/${sinistreID}`, {
+    fetch(`../index.js/api/referent/put/etat-sinistre/${sinistreID}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
