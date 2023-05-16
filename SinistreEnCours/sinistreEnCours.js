@@ -617,7 +617,6 @@ fetch("/api/clients/", {
                                     binary += String.fromCharCode(bytes[i]);
                                   }
                                   return (
-                                    "aHR0cDovL2xvY2FsaG9zdDozMDAw" +
                                     window.btoa(binary)
                                   );
                                 }
