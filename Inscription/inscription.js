@@ -88,7 +88,7 @@ inscriptionForm.addEventListener('submit', event => {
     checkMailClt(getVal(inputMailClt))
 
     if (inscription) {
-      fetch('../index.js/api/clients/', {
+      fetch('/api/clients/', {
       method: 'POST', // or 'PUT'
       headers: {
           'Content-Type': 'application/json',
