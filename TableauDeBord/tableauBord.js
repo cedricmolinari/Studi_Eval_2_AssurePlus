@@ -194,7 +194,7 @@ elSelectSinistre.addEventListener("change", (event) => {
                   for (var i = 0; i < len; i++) {
                     binary += String.fromCharCode(bytes[i]);
                   }
-                  return "aHR0cDovL2xvY2FsaG9zdDozMDAw" + window.btoa(binary);
+                  return window.btoa(binary);
                 }
 
                 //convert base64 to string
