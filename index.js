@@ -303,7 +303,7 @@ import { success, error } from './functions.js';
         var filename;
         var storage = multer.diskStorage({
             destination: function(request, file, callback) {
-                callback(null, './upload');
+                callback(null, './uploads');
             },
             filename: function(request, file, callback) {
                 var temp_file_arr = file.originalname.split(".");
@@ -333,7 +333,7 @@ import { success, error } from './functions.js';
       var filename;
       var storage = multer.diskStorage({
         destination: function(request, file, callback) {
-          callback(null, './upload');
+          callback(null, './uploads');
         },
         filename: function(request, file, callback) {
           var temp_file_arr = file.originalname.split(".");
@@ -375,7 +375,7 @@ import { success, error } from './functions.js';
       var filename;
       var storage = multer.diskStorage({
         destination: function(request, file, callback) {
-          callback(null, './upload');
+          callback(null, './uploads');
         },
         filename: function(request, file, callback) {
           var temp_file_arr = file.originalname.split(".");
