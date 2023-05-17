@@ -303,7 +303,7 @@ import { success, error } from './functions.js';
         var filename;
         var storage = multer.diskStorage({
             destination: function(request, file, callback) {
-                callback(null, './uploads');
+                callback(null, './upload');
             },
             filename: function(request, file, callback) {
                 var temp_file_arr = file.originalname.split(".");
@@ -321,7 +321,7 @@ import { success, error } from './functions.js';
               //let dateNow = new Date(Date.now()).toLocaleString().split(',')[0]
               var sqlInsertForm =
               `INSERT INTO "Formulaires" (document_form, date_ajout_form, sinistre_id, libelle_form) \
-                SELECT bytea('/uploads/${filename}'), current_date, id_sin, '${filename}' FROM "Sinistres" AS sin \
+                SELECT bytea('/upload/${filename}'), current_date, id_sin, '${filename}' FROM "Sinistres" AS sin \
                 WHERE sin.id_sin = (SELECT id_sin FROM "Sinistres" ORDER BY id_sin DESC limit 1)`;                 
               pgsql.query(sqlInsertForm)
             } 
@@ -333,7 +333,7 @@ import { success, error } from './functions.js';
       var filename;
       var storage = multer.diskStorage({
         destination: function(request, file, callback) {
-          callback(null, './uploads');
+          callback(null, './upload');
         },
         filename: function(request, file, callback) {
           var temp_file_arr = file.originalname.split(".");
@@ -356,7 +356,7 @@ import { success, error } from './functions.js';
                   if (((file[i].size/1024)/1024).toFixed(4) < 2) {
                     var sqlPho =
                     `INSERT INTO "Photos" (image_pho, date_ajout_pho, sinistre_id, libelle_pho) \
-                      SELECT bytea('/uploads/${file[i].filename}'), current_date, id_sin, '${file[i].filename}' FROM "Sinistres" AS sin \
+                      SELECT bytea('/upload/${file[i].filename}'), current_date, id_sin, '${file[i].filename}' FROM "Sinistres" AS sin \
                       WHERE sin.id_sin = (SELECT id_sin FROM "Sinistres" ORDER BY id_sin DESC limit 1)`;                 
                     pgsql.query(sqlPho)
                   } else {
@@ -375,7 +375,7 @@ import { success, error } from './functions.js';
       var filename;
       var storage = multer.diskStorage({
         destination: function(request, file, callback) {
-          callback(null, './uploads');
+          callback(null, './upload');
         },
         filename: function(request, file, callback) {
           var temp_file_arr = file.originalname.split(".");
@@ -408,7 +408,7 @@ import { success, error } from './functions.js';
   
                           var sqlPho =
                           `INSERT INTO "Photos" (image_pho, date_ajout_pho, sinistre_id, libelle_pho) \
-                            VALUES (bytea('/uploads/${file[i].filename}'), current_date, $1, '${file[i].filename}')`;                 
+                            VALUES (bytea('/upload/${file[i].filename}'), current_date, $1, '${file[i].filename}')`;                 
                           pgsql.query(sqlPho, [request.params.sinistre_id], (err, result) => {
                             if (err) {
                               response.json(error(err.message))
