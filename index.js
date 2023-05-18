@@ -1,5 +1,6 @@
 import express from 'express';
 import multer from 'multer';
+import multerS3 from 'multer';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import fs from 'fs';
@@ -12,6 +13,7 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import bcrypt from 'bcrypt';
 import bodyParser from 'body-parser';
+import aws from 'aws-sdk';
 dotenv.config()
 
 const { Client } = pkg;
@@ -35,6 +37,32 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(__dirname));
 app.use('/upload', express.static(path.join(__dirname, 'upload')));
+
+// configuration de l'API S3 d'Amazon pour uploader les images dans le bucket de Digital Ocean
+aws.config.update({
+  region: 'fra1',
+  endpoint: 'https://fra1.digitaloceanspaces.com'
+});
+
+var s3 = new aws.S3();
+
+var upload = multer({
+  storage: multerS3({
+      s3: s3,
+      bucket: 'uploadphotos',
+      acl: 'public-read',
+      metadata: function (request, file, cb) {
+          cb(null, { fieldName: file.fieldname });
+      },
+      key: function (request, file, cb) {
+          var temp_file_arr = file.originalname.split(".");
+          var temp_file_name = temp_file_arr[0];
+          var temp_file_extension = temp_file_arr[1];
+          var filename = temp_file_name + '-' + Date.now() + '.' + temp_file_extension;
+          cb(null, filename);
+      }
+  })
+});
 
 
 import { success, error } from './functions.js';
@@ -302,33 +330,19 @@ import { success, error } from './functions.js';
     
     TestRouter.route('/api/declarations/single-formulaire/')
     .post(function(request, response, next) {
-        var filename;
-        var storage = multer.diskStorage({
-            destination: function(request, file, callback) {
-                callback(null, './upload');
-            },
-            filename: function(request, file, callback) {
-                var temp_file_arr = file.originalname.split(".");
-                var temp_file_name = temp_file_arr[0];
-                var temp_file_extension = temp_file_arr[1];
-                filename = temp_file_name + '-' + Date.now() + '.' + temp_file_extension
-                callback(null, temp_file_name + '-' + Date.now() + '.' + temp_file_extension);
-            }
-          });
-          var upload = multer({storage:storage}).single('document_form');
-          upload(request, response, function(error) {
+        upload.single('document_form')(request, response, function(error) {
             if (error) {
-                return response.end('Error Uploading File');
+                return response.status(500).json({error: 'Error Uploading File'});
             } else {
-              //let dateNow = new Date(Date.now()).toLocaleString().split(',')[0]
-              var sqlInsertForm =
-              `INSERT INTO "Formulaires" (document_form, date_ajout_form, sinistre_id, libelle_form) \
-                SELECT bytea('/upload/${filename}'), current_date, id_sin, '${filename}' FROM "Sinistres" AS sin \
-                WHERE sin.id_sin = (SELECT id_sin FROM "Sinistres" ORDER BY id_sin DESC limit 1)`;                 
-              pgsql.query(sqlInsertForm)
+                var filename = request.file.key;
+                var sqlInsertForm =
+                `INSERT INTO "Formulaires" (document_form, date_ajout_form, sinistre_id, libelle_form) \
+                    SELECT '${filename}', current_date, id_sin, '${filename}' FROM "Sinistres" AS sin \
+                    WHERE sin.id_sin = (SELECT id_sin FROM "Sinistres" ORDER BY id_sin DESC limit 1)`;                 
+                pgsql.query(sqlInsertForm);
             } 
-          })
-      });
+        });
+    });
     
     TestRouter.route('/api/declarations/multiple-images/')
     .post(function(request, response, next) {
