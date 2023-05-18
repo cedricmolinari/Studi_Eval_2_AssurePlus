@@ -39,6 +39,8 @@ app.use(express.static(__dirname));
 
 // configuration de l'API S3 d'Amazon pour uploader les images dans le bucket de Digital Ocean
 aws.config.update({
+  accessKeyId: 'uploadphotos',
+  secretAccessKey: 'DO00VTDCVEADFFVMP2TL',
   region: 'fra1',
   endpoint: 'https://fra1.digitaloceanspaces.com'
 });
