@@ -36,7 +36,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(__dirname));
-app.use('/upload', express.static(path.join(__dirname, 'upload')));
 
 // configuration de l'API S3 d'Amazon pour uploader les images dans le bucket de Digital Ocean
 aws.config.update({
