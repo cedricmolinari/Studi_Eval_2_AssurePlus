@@ -34,6 +34,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(__dirname));
+app.use('/upload', express.static('upload'));
 
 import { success, error } from './functions.js';
 
