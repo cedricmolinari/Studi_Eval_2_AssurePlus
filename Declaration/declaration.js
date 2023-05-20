@@ -148,15 +148,23 @@ declarationForm.addEventListener('submit', event => {
         body: bodyFormData,
       })
       .then((response) => {
-        response.json().then(message => ({
-          message: message
-        })).then(response => {
-          var count = Object.keys(response.message.arrError).length;
-          for (let i = 0 ; i < count; i++) {
-            alerteElementP(`erreurPhoMlp${i}`, `La photo ${response.message.arrError[i].message} est trop volumineuse (supérieure à 2 mo)`, "divMlpPhoto")
-          }
-        })
+        return response.json();
       })
+      .then(response => {
+        if (response.success) {
+          alert(response.success);
+        }
+      
+        var count = response.arrError.length;
+        for (let i = 0 ; i < count; i++) {
+          alerteElementP(`erreurPhoMlp${i}`, response.arrError[i].message, "divMlpPhoto")
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+      
+      
 
     } else {
       alert('Merci de soumettre un sinistre valide d\'abord');
@@ -175,6 +183,11 @@ declarationForm.addEventListener('submit', event => {
         body: bodyFormData,
       })
         .then(response => {
+          response.json().then(message => ({
+            message: message,
+            status: response.status
+          })).then(response => {
+            alert(response.message.result);})
         })
     } else {
       alert('Merci de soumettre un sinistre valide d\'abord');

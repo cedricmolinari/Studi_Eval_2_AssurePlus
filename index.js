@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import multerS3 from 'multer';
+import multerS3 from 'multer-s3';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import fs from 'fs';
@@ -13,7 +13,8 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import bcrypt from 'bcrypt';
 import bodyParser from 'body-parser';
-import aws from 'aws-sdk';
+//import aws from 'aws-sdk';
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 dotenv.config()
 
 const { Client } = pkg;
@@ -37,19 +38,20 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(__dirname));
 
-// configuration de l'API S3 d'Amazon pour uploader les images dans le bucket de Digital Ocean
-aws.config.update({
-  accessKeyId: 'uploadphotos',
-  secretAccessKey: 'DO00VTDCVEADFFVMP2TL',
-  region: 'fra1',
-  endpoint: 'https://fra1.digitaloceanspaces.com'
+const s3Client = new S3Client({
+  endpoint: "https://fra1.digitaloceanspaces.com", // Find your endpoint in the control panel, under Settings. Prepend "https://".
+  forcePathStyle: false, // Configures to use subdomain/virtual calling format.
+  region: "fra1", // Must be "us-east-1" when creating new Spaces. Otherwise, use the region in your endpoint (e.g. nyc3).
+  credentials: {
+    accessKeyId: "DO00JNW6328L4HPUE4XK", // Access key pair. You can create access key pairs using the control panel or API.
+    secretAccessKey: process.env.SPACES_SECRET // Secret access key defined through an environment variable.
+  }
 });
 
-var s3 = new aws.S3();
 
 var upload = multer({
   storage: multerS3({
-      s3: s3,
+      s3: s3Client,
       bucket: 'uploadphotos',
       acl: 'public-read',
       metadata: function (request, file, cb) {
@@ -329,115 +331,160 @@ import { success, error } from './functions.js';
           }
       })
     
-    TestRouter.route('/api/declarations/single-formulaire/')
-    .post(function(request, response, next) {
+      TestRouter.route('/api/declarations/single-formulaire/')
+      .post(function(request, response, next) {
+          upload.single('document_form')(request, response, function(error) {
+              if (error) {
+                  return response.status(500).json({error: 'Error Uploading File'});
+              } else {
+                  var filename = request.file.key;
+                  var sqlInsertForm =
+                  `INSERT INTO "Formulaires" (document_form, date_ajout_form, sinistre_id, libelle_form) \
+                      SELECT '${filename}', current_date, id_sin, '${filename}' FROM "Sinistres" AS sin \
+                      WHERE sin.id_sin = (SELECT id_sin FROM "Sinistres" ORDER BY id_sin DESC limit 1)`;                 
+                  pgsql.query(sqlInsertForm, (err, result) => {
+                      if (err) {
+                          return response.status(500).json({error: err.message});
+                      } else {
+                        response.json(success(`Ajout de formulaire réussi`))
+                      }
+                  });
+              } 
+          });
+      });
+
+      TestRouter.route('/api/declarations/single-formulaire/post/:sinistre_id')
+      .post(function(request, response, next) {       
         upload.single('document_form')(request, response, function(error) {
+          console.log(response);
             if (error) {
-                return response.status(500).json({error: 'Error Uploading File'});
+              return response.status(500).json({error: 'Error Uploading File'});
             } else {
-                var filename = request.file.key;
-                var sqlInsertForm =
-                `INSERT INTO "Formulaires" (document_form, date_ajout_form, sinistre_id, libelle_form) \
-                    SELECT '${filename}', current_date, id_sin, '${filename}' FROM "Sinistres" AS sin \
-                    WHERE sin.id_sin = (SELECT id_sin FROM "Sinistres" ORDER BY id_sin DESC limit 1)`;                 
-                pgsql.query(sqlInsertForm);
+                var file = request.file;
+                var filename = file.key;
+                
+                var sqlNbForm = 
+                `SELECT COUNT(*) FROM "Formulaires" WHERE sinistre_id = $1;`
+                pgsql.query(sqlNbForm, [request.params.sinistre_id], (err, result) => {
+                    if ((((file.size/1024)/1024).toFixed(4) > 2)) {
+                        response.json({error: `Le formulaire ${filename} est trop volumineux (limite : 2 mo)`})
+                    } else {
+
+                        if (result.rows[0].count > 0) {
+                            response.json({error: 'limite du nombre de formulaire dépassée (1)'})
+                        } else {
+  
+                            var sqlForm =
+                            `INSERT INTO "Formulaires" (libelle_form, date_ajout_form, sinistre_id, document_form) \
+                                VALUES ('${filename}', current_date, $1, '${filename}')`;                 
+                            pgsql.query(sqlForm, [request.params.sinistre_id], (err, result) => {
+                                if (err) {
+                                    response.json({error: err.message})
+                                } else {
+                                    response.json({success: `Ajout de formulaire réussi`})
+                                }
+                            })
+                        }
+                    }
+                });              
+            } 
+        })
+      });
+  
+      TestRouter.route('/api/declarations/multiple-images/')
+    .post(function(request, response, next) {
+        upload.array('image_pho', 5)(request, response, function(error) {
+            if (error) {
+                return response.status(500).json({error: 'Error Uploading Files'});
+            } else {
+                let files = request.files;
+                let arrError = [];
+                for(let i=0; i<files.length; i++) {
+                    if ((files[i].size / 1024 / 1024) > 2) {
+                        arrError.push({
+                            message: `La photo ${files[i].key} est trop volumineuse (supérieure à 2 mo)`
+                        });
+                    } else {
+                        let filename = files[i].key;
+                        var sqlPho =
+                        `INSERT INTO "Photos" (image_pho, date_ajout_pho, sinistre_id, libelle_pho) \
+                          SELECT '${filename}', current_date, id_sin, '${filename}' FROM "Sinistres" AS sin \
+                          WHERE sin.id_sin = (SELECT id_sin FROM "Sinistres" ORDER BY id_sin DESC limit 1)`;                 
+                                        
+                        pgsql.query(sqlPho, (err, result) => {
+                            if (err) {
+                                return response.status(500).json({error: err.message});
+                            }
+                        });
+                    }
+                }
+                return response.json({success: `Ajout de photo(s) réussi`, arrError: arrError});
             } 
         });
     });
-    
-    TestRouter.route('/api/declarations/multiple-images/')
-    .post(function(request, response, next) {
-      var filename;
-      var storage = multer.diskStorage({
-        destination: function(request, file, callback) {
-          callback(null, './upload');
-        },
-        filename: function(request, file, callback) {
-          var temp_file_arr = file.originalname.split(".");
-          var temp_file_name = temp_file_arr[0];
-          var temp_file_extension = temp_file_arr[1];
-          filename = temp_file_name + '-' + Date.now() + '.' + temp_file_extension
-          callback(null, temp_file_name + '-' + Date.now() + '.' + temp_file_extension);
-        }
-        });
-        var upload = multer({storage:storage}).array('image_pho', 5);
-        
-        upload(request, response, function(err) {
-            if (err) {
-                return response.end('Error Uploading File');
+
+    TestRouter.route('/api/declarations/single-image/:sinistre_id')
+    .post(function(request, response, next) {       
+        upload.single('image_pho')(request, response, function(error) {
+            if (error) {
+              return response.status(500).json({error: 'Error Uploading File'});
             } else {
-                var file = request.files;
-                var arrError = [];
-                //response.end();
-                for (let i = 0 ; i < file.length ; i++) {
-                  if (((file[i].size/1024)/1024).toFixed(4) < 2) {
-                    var sqlPho =
-                    `INSERT INTO "Photos" (image_pho, date_ajout_pho, sinistre_id, libelle_pho) \
-                      SELECT bytea('/upload/${file[i].filename}'), current_date, id_sin, '${file[i].filename}' FROM "Sinistres" AS sin \
-                      WHERE sin.id_sin = (SELECT id_sin FROM "Sinistres" ORDER BY id_sin DESC limit 1)`;                 
-                    pgsql.query(sqlPho)
-                  } else {
-                    arrError.push({"message":`${file[i].filename}`})
-                  }
-                }
-                response.send({
-                  arrError
-                })
-              } 
+                var file = request.file;
+                var filename = file.key;
+                
+                var sqlNbPho = 
+                `SELECT COUNT(*) FROM "Photos" WHERE sinistre_id = $1;`
+                pgsql.query(sqlNbPho, [request.params.sinistre_id], (err, result) => {
+                    if ((((file.size/1024)/1024).toFixed(4) > 2)) {
+                        response.json({error: `La photo ${filename} trop volumineuse (limite : 2 mo)`})
+                    } else {
+
+                        if (result.rows[0].count > 4) {
+                            response.json({error: 'limite du nombre de photos dépassée (5)'})
+                        } else {
+  
+                            var sqlPho =
+                            `INSERT INTO "Photos" (image_pho, date_ajout_pho, sinistre_id, libelle_pho) \
+                                VALUES ('${filename}', current_date, $1, '${filename}')`;                 
+                            pgsql.query(sqlPho, [request.params.sinistre_id], (err, result) => {
+                                if (err) {
+                                    response.json({error: err.message})
+                                } else {
+                                    response.json({success: `Ajout de photo réussi`})
+                                }
+                            })
+                        }
+                    }
+                });              
+            } 
         })
     })
 
-    TestRouter.route('/api/declarations/single-image/:sinistre_id')
-    .post(function(request, response, next) {
-      var filename;
-      var storage = multer.diskStorage({
-        destination: function(request, file, callback) {
-          callback(null, './upload');
-        },
-        filename: function(request, file, callback) {
-          var temp_file_arr = file.originalname.split(".");
-          var temp_file_name = temp_file_arr[0];
-          var temp_file_extension = temp_file_arr[1];
-          filename = temp_file_name + '-' + Date.now() + '.' + temp_file_extension
-          callback(null, temp_file_name + '-' + Date.now() + '.' + temp_file_extension);
+    
+    
+    TestRouter.route('/api/declarations/single-formulaire/get/:sinistre_id')
+    // Récupère les formulaires d'un sinistre d'après son ID
+    .get((req, res) => {
+      pgsql.query(`SELECT * FROM \"Formulaires\" WHERE sinistre_id = $1::INTEGER;`, [req.params.sinistre_id], (err, result) => {
+        if (err) {
+          res.json(error(err.message))
+        } else {
+          res.json(success(result.rows));
         }
-        });
-        var upload = multer({storage:storage}).array('image_pho', 5);
-        
-        upload(request, response, function(err) {
-            if (err) {
-                return response.end('Error Uploading File');
-            } else {
-                var file = request.files;
-                var arrError = [];
-                //response.end();
-                for (let i = 0 ; i < file.length ; i++) {
-                    var sqlNbPho = 
-                    `SELECT COUNT(*) FROM "Photos" WHERE sinistre_id = $1;`
-                    pgsql.query(sqlNbPho, [request.params.sinistre_id], (err, result) => {
-                      if ((((file[i].size/1024)/1024).toFixed(4) > 2)) {
-                        response.json(error(`La photo ${file[i].filename} trop volumineuse (limite : 2 mo)`))
-                      } else {
+      })
+    })
 
-                        if (result.rows[0].count > 4) {
-                          response.json(error('limite du nombre de photos dépassée (5)'))
-                        } else {
-  
-                          var sqlPho =
-                          `INSERT INTO "Photos" (image_pho, date_ajout_pho, sinistre_id, libelle_pho) \
-                            VALUES (bytea('/upload/${file[i].filename}'), current_date, $1, '${file[i].filename}')`;                 
-                          pgsql.query(sqlPho, [request.params.sinistre_id], (err, result) => {
-                            if (err) {
-                              response.json(error(err.message))
-                            } else {
-                              response.json(success(`Ajout de photo réussi`))
-                            }
-                          })
-                        }}})
-                }
-                
-              } 
-        })
+    TestRouter.route('/api/modif-declaration/single-formulaire/post/:sinistre_id')
+    // Supprime le formulaire d'un sinistre d'après son ID
+    .post((req, res) => {
+      pgsql.query(`DELETE FROM \"Formulaires\" WHERE sinistre_id = $1::INTEGER AND id_form = $2::INTEGER;`, [req.body.sinistre_id, req.body.id_form], (err, result) => {
+        console.log(result);
+        if (err) {
+          res.json(error(err.message))
+        } else {
+          res.json(success(result));
+        }
+      })
     })
 
     TestRouter.route('/api/declarations/multiple-images/get/:sinistre_id')
@@ -452,8 +499,10 @@ import { success, error } from './functions.js';
       })
     })
 
+
+
     TestRouter.route('/api/modif-declaration/multiple-images/post/:sinistre_id')
-    // Poste les photos d'un sinistre d'après son ID
+    // Supprime les photos d'un sinistre d'après son ID
     .post((req, res) => {
       pgsql.query(`DELETE FROM \"Photos\" WHERE sinistre_id = $1::INTEGER AND id_pho = $2::INTEGER;`, [req.body.sinistre_id, req.body.id_pho], (err, result) => {
         if (err) {
@@ -462,7 +511,8 @@ import { success, error } from './functions.js';
           res.json(success(result));
         }
       })
-    }) 
+    })
+
     TestRouter.route('/api/modif-declaration/put/dommage-corp/:id_sin')
     // Modifie le dommage corporel d'un sinistre d'après son ID
     .put((req, res) => {
@@ -592,6 +642,7 @@ import { success, error } from './functions.js';
     
 
     app.use(TestRouter)
-    app.listen(8080, () => console.log('Started on port ' + 8080))
+    //app.listen(8080, () => console.log('Started on port ' + 8080))
+    app.listen(3000, 'localhost', () => console.log('Started on port ' + 3000))
   }
 });

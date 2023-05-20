@@ -4,6 +4,8 @@ var tableauSinistres = document.querySelector("tbody");
 var boutonModifDonnees = document.querySelector("#modifDonnees");
 var boutonNouvellePhoto = document.querySelector("#btnNouvellePhoto");
 var formNouvellePhoto = document.querySelector("#formAjoutPhoto");
+var boutonNouveauFormulaire = document.querySelector("#btnNouveauFormulaire");
+var formNouveauFormulaire = document.querySelector("#formAjoutFormulaire");
 var boutonSaveModif = document.querySelector("#saveModif");
 var colRef = document.querySelector("#ref");
 var colDate = document.querySelector("#date");
@@ -12,9 +14,14 @@ var disabledElements = [];
 var arrSinistresID = [];
 var arrSinistreIDSelect = [];
 var arrPhotosID = [];
+var formulaireID = [];
 var clientID;
 var modifEnCours = false;
 let j = -1;
+
+boutonModifDonnees.style.display = 'none';
+formNouvellePhoto.style.display = 'none';
+formNouveauFormulaire.style.display = 'none';
 
 document.addEventListener("DOMContentLoaded", function () {
   const bandeauConnexion = sessionStorage.getItem("bandeauConnexion");
@@ -119,9 +126,11 @@ fetch("/api/clients/", {
             refSinList.forEach((element) => {
               element.addEventListener("click", (e) => {
                 if (modifEnCours == false) {
+                  disabledElements = [];
                   //on affiche les boutons modifier et ajout photo
                   boutonModifDonnees.style.display = "";
                   formNouvellePhoto.style.display = "";
+                  formNouveauFormulaire.style.display = "";
 
                   //on met la référence du sinistre en cours de consultation dans le fieldset
                   document.querySelector(
@@ -469,7 +478,7 @@ fetch("/api/clients/", {
                         //ajoute le commentaire référent
                         var elementDiv_DetailSinCommentaireRef =
                           document.createElement("div");
-                          elementDiv_DetailSinCommentaireRef.classList.add(
+                        elementDiv_DetailSinCommentaireRef.classList.add(
                           "container",
                           "d-flex",
                           "justify-content-center",
@@ -479,23 +488,25 @@ fetch("/api/clients/", {
 
                         var elementP_DetailSinCommentaireRef =
                           document.createElement("p");
-                          elementP_DetailSinCommentaireRef.innerHTML =
+                        elementP_DetailSinCommentaireRef.innerHTML =
                           "Commentaire référent sinistre : ";
-                          elementP_DetailSinCommentaireRef.classList.add(
+                        elementP_DetailSinCommentaireRef.classList.add(
                           "text-center"
                         );
 
                         var elementInput_DetailSinCommentaireRef =
                           document.createElement("input");
-                          elementInput_DetailSinCommentaireRef.type = "text";
-                          elementInput_DetailSinCommentaireRef.classList.add(
+                        elementInput_DetailSinCommentaireRef.type = "text";
+                        elementInput_DetailSinCommentaireRef.classList.add(
                           "form-control",
                           "text-center"
                         );
-                        elementInput_DetailSinCommentaireRef.style.border = "1px solid red";
+                        elementInput_DetailSinCommentaireRef.style.border =
+                          "1px solid red";
 
                         elementInput_DetailSinCommentaireRef.value = `${
-                          response.message.result.commentaire_referent_sin == null
+                          response.message.result.commentaire_referent_sin ==
+                          null
                             ? ""
                             : response.message.result.commentaire_referent_sin
                         }`;
@@ -528,111 +539,159 @@ fetch("/api/clients/", {
                               "Content-Type": "application/json",
                             },
                           }
-                        ).then((response) => {
-                          response
-                            .json()
-                            .then((message) => ({
-                              message: message,
-                              status: response.status,
-                            }))
-                            .then((response) => {
-                              for (
-                                let j = 0;
-                                j < response.message.result.length;
-                                j++
-                              ) {
-                                //ajoute une image
-                                var elementDiv = document.createElement("div");
-                                elementDiv.style.position = "relative";
-                                elementDiv.style.width = "auto";
-                                elementDiv.style.margin = "10px";
-                                elementDiv.classList.add(
-                                  "d-inline-flex",
-                                  "justify-content-center"
-                                );
-                                infoSinistreDetail.appendChild(elementDiv);
+                        )
+                          .then((response) => {
+                            return response.json();
+                          })
+                          .then((response) => {
+                            console.log(response);
+                            var elementP_DetailSinPhotos =
+                              document.createElement("p");
+                            elementP_DetailSinPhotos.innerHTML = "Photos : ";
+                            elementP_DetailSinPhotos.classList.add(
+                              "text-center"
+                            );
 
-                                // Ajoute une photo
-                                var elementImg_DetailSinPhotos =
-                                  document.createElement("img");
-                                elementImg_DetailSinPhotos.setAttribute(
-                                  "id",
-                                  `imgView${response.message.result[j].id_pho}`
-                                );
-                                elementImg_DetailSinPhotos.classList.add(
-                                  "img-fluid"
-                                );
-                                elementImg_DetailSinPhotos.style.width =
-                                  "200px";
-                                elementImg_DetailSinPhotos.style.height =
-                                  "200px";
+                            infoSinistreDetail.appendChild(
+                              elementP_DetailSinPhotos
+                            );
 
-                                elementDiv.appendChild(
-                                  elementImg_DetailSinPhotos
-                                );
+                            var imagesContainer = document.createElement("div");
+                            imagesContainer.style.display = "flex";
+                            imagesContainer.style.justifyContent = "center";
+                            imagesContainer.style.flexWrap = "wrap";
 
-                                // Ajoute un bouton delete sur les photos
-                                var elementInput_BtnDeletePhotos =
-                                  document.createElement("input");
-                                elementInput_BtnDeletePhotos.type = "button";
-                                elementInput_BtnDeletePhotos.value = "X";
-                                elementInput_BtnDeletePhotos.setAttribute(
-                                  "alt",
-                                  "Supprimer cette photo"
-                                );
-                                elementInput_BtnDeletePhotos.setAttribute(
-                                  "title",
-                                  "Supprimer cette photo"
-                                );
-                                elementInput_BtnDeletePhotos.setAttribute(
-                                  "disabled",
-                                  ""
-                                );
-                                elementInput_BtnDeletePhotos.setAttribute(
-                                  "id",
-                                  `BtnDeletePhotos${response.message.result[j].id_pho}`
-                                );
-                                elementInput_BtnDeletePhotos.classList.add(
-                                  "position-absolute"
-                                );
-                                elementInput_BtnDeletePhotos.style.top = "0";
-                                elementInput_BtnDeletePhotos.style.right = "0";
-                                elementDiv.appendChild(
-                                  elementInput_BtnDeletePhotos
-                                );
-                                disabledElements.push(
-                                  elementInput_BtnDeletePhotos.id
-                                );
+                            infoSinistreDetail.appendChild(imagesContainer);
 
-                                //ajoute un saut de ligne
-                                var elementBr = document.createElement("br");
-                                infoSinistreDetail.appendChild(elementBr);
+                            for (let j = 0; j < response.result.length; j++) {
+                              //ajoute une image
+                              var elementDiv = document.createElement("div");
+                              elementDiv.style.position = "relative";
+                              elementDiv.style.width = "auto";
+                              elementDiv.style.margin = "10px";
 
-                                //convert byte array to base64
-                                function _arrayBufferToBase64(buffer) {
-                                  var binary = "";
-                                  var bytes = new Uint8Array(buffer);
-                                  var len = bytes.byteLength;
-                                  for (var i = 0; i < len; i++) {
-                                    binary += String.fromCharCode(bytes[i]);
-                                  }
-                                  return (
-                                    window.btoa(binary)
-                                  );
-                                }
+                              // Ajoute une photo
+                              var elementImg_DetailSinPhotos =
+                                document.createElement("img");
+                              elementImg_DetailSinPhotos.setAttribute(
+                                "id",
+                                `imgView${response.result[j].id_pho}`
+                              );
+                              elementImg_DetailSinPhotos.classList.add(
+                                "img-fluid"
+                              );
+                              elementImg_DetailSinPhotos.style.width = "200px";
+                              elementImg_DetailSinPhotos.style.height = "200px";
 
-                                //convert base64 to string
-                                var decodedStringAtoB = window.atob(
-                                  _arrayBufferToBase64(
-                                    response.message.result[j].image_pho.data
-                                  )
-                                );
-                                document.getElementById(
-                                  `imgView${response.message.result[j].id_pho}`
-                                ).src = `${decodedStringAtoB}`;
-                              }
-                            });
-                        });
+                              // Set the source of the image to the URL of the image in the Digital Ocean Space
+                              let imageUrl = `https://uploadphotos.fra1.digitaloceanspaces.com/${response.result[j].libelle_pho}`; // Remplacer 'libelle_pho' par le champ contenant le nom de l'image
+                              elementImg_DetailSinPhotos.src = imageUrl;
+
+                              elementDiv.appendChild(
+                                elementImg_DetailSinPhotos
+                              );
+                              imagesContainer.appendChild(elementDiv);
+
+                              // Ajoute un bouton delete sur les photos
+                              var elementInput_BtnDeletePhotos =
+                                document.createElement("input");
+                              elementInput_BtnDeletePhotos.type = "button";
+                              elementInput_BtnDeletePhotos.value = "X";
+                              elementInput_BtnDeletePhotos.setAttribute(
+                                "alt",
+                                "Supprimer cette photo"
+                              );
+                              elementInput_BtnDeletePhotos.setAttribute(
+                                "title",
+                                "Supprimer cette photo"
+                              );
+                              elementInput_BtnDeletePhotos.setAttribute(
+                                "disabled",
+                                ""
+                              );
+                              elementInput_BtnDeletePhotos.setAttribute(
+                                "id",
+                                `BtnDeletePhotos${response.result[j].id_pho}`
+                              );
+                              elementInput_BtnDeletePhotos.classList.add(
+                                "position-absolute"
+                              );
+                              elementInput_BtnDeletePhotos.style.top = "0";
+                              elementInput_BtnDeletePhotos.style.right = "0";
+                              elementDiv.appendChild(
+                                elementInput_BtnDeletePhotos
+                              );
+                              disabledElements.push(
+                                elementInput_BtnDeletePhotos.id
+                              );
+                            }
+                          })
+                          .catch((error) => {
+                            console.error("Error:", error);
+                          });
+                        fetch(
+                          `/api/declarations/single-formulaire/get/${response.message.result.id_sin}`,
+                          {
+                            method: "GET",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                          }
+                        )
+                          .then((response) => {
+                            return response.json();
+                          })
+                          .then((response) => {
+                            console.log(response.result.length);
+                            if (response.result.length > 0) {
+
+                              //ajoute un formulaire
+                              var elementDivForm = document.createElement("div");
+                              elementDivForm.style.position = "relative";
+                              elementDivForm.style.width = "auto";
+                              elementDivForm.style.margin = "10px";
+                              elementDivForm.classList.add(
+                                "justify-content-center"
+                              );
+                              infoSinistreDetail.appendChild(elementDivForm);
+  
+                              // Set the source of the image to the URL of the image in the Digital Ocean Space
+                              let imageUrl = `https://uploadphotos.fra1.digitaloceanspaces.com/${response.result[0].libelle_form}`; // Remplacer 'libelle_pho' par le champ contenant le nom de l'image
+                              // Ajoute un formulaire
+                              
+                              formulaireID.push(response.result[0].id_form)
+                              var elementA = document.createElement("a");
+                              elementA.setAttribute(
+                                "id",
+                                "LinkFormulaire"
+                              );
+                              elementA.href = imageUrl; // Remplacez imageUrl par l'URL de votre PDF
+                              
+                              elementA.textContent = "Télécharger le formulaire";
+                              elementDivForm.appendChild(elementA);
+  
+                              // Create a delete button
+                              var deleteButton = document.createElement("input");
+                              deleteButton.type = 'button';
+                              deleteButton.setAttribute(
+                                "disabled",
+                                ""
+                              );
+                              deleteButton.setAttribute(
+                                "id",
+                                "BtnDeleteFormulaire"
+                              );
+                              deleteButton.value = "X";
+                              deleteButton.style.marginLeft = "10px";
+                              elementDivForm.appendChild(deleteButton);
+                              disabledElements.push(
+                                deleteButton.id
+                              );
+                            }
+                          })
+                          .catch((error) => {
+                            console.error("Error:", error);
+                          });
                       });
                   });
                 } else {
@@ -677,6 +736,7 @@ boutonModifDonnees.addEventListener("click", (e) => {
   });
 
   //active tous les éléments pour pouvoir les modifier
+  console.log(disabledElements);
   disabledElements.forEach((element) => {
     element = document.querySelector(`#${element}`);
     element.removeAttribute("disabled");
@@ -703,6 +763,13 @@ boutonModifDonnees.addEventListener("click", (e) => {
       }
     });
   });
+  if (document.querySelector('#LinkFormulaire') != undefined) {
+
+    document.querySelector('#BtnDeleteFormulaire').addEventListener("click", (e) => {
+      document.querySelector('#LinkFormulaire').remove();
+      document.querySelector('#BtnDeleteFormulaire').remove();
+    })
+  }
   document.querySelector("#saveModif").addEventListener("click", () => {
     var imgData;
     for (let i = 0; i < arrPhotosID.length; i++) {
@@ -729,6 +796,31 @@ boutonModifDonnees.addEventListener("click", (e) => {
           .then((response) => {});
       });
     }
+    var formData;
+    formData = {
+      sinistre_id: `${arrSinistreIDSelect}`,
+      id_form: formulaireID[0],
+    };
+    console.log(formData);
+    fetch(
+      `/api/modif-declaration/single-formulaire/post/${formulaireID}`,
+      {
+        method: "POST", // or 'PUT'
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      }
+    ).then((response) => {
+      response
+        .json()
+        .then((message) => ({
+          message: message,
+          status: response.status,
+        }))
+        .then((response) => {});
+    });
+  
     var inputData;
     //enregistre la modification de la rue
     var rueElement = document.getElementById("DetailSinRue");
@@ -878,24 +970,60 @@ boutonNouvellePhoto.addEventListener("change", (e) => {
   fetch(`/api/declarations/single-image/${arrSinistreIDSelect}`, {
     method: "POST",
     body: bodyFormData,
-  }).then((response) => {
-    response
-      .json()
-      .then((message) => ({
-        message: message,
-        status: response.status,
-      }))
-      .then((response) => {
-        if (
-          response.message.message == "limite du nombre de photos dépassée (5)"
-        ) {
-          alert("Vous ne pouvez pas ajouter plus de 5 photos");
-        } else if (response.message.result.slice(-15) == "(limite : 2 mo)") {
-          alert("Le fichier est trop volumineux (limite de 2mo)");
-        } else {
-          alert(response.message.result);
-          boutonNouvellePhoto.form.reset();
+  })
+    .then((response) => response.json())
+    .then((response) => {
+      if (response.error) {
+        switch (response.error) {
+          case "limite du nombre de photos dépassée (5)":
+            alert("Vous ne pouvez pas ajouter plus de 5 photos");
+            break;
+          default:
+            if (response.error.slice(-15) == "(limite : 2 mo)") {
+              alert("Le fichier est trop volumineux (limite de 2mo)");
+            } else {
+              alert(response.error);
+            }
         }
-      });
-  });
+      } else if (response.success) {
+        alert(response.success);
+        boutonNouvellePhoto.form.reset();
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+});
+
+boutonNouveauFormulaire.addEventListener("change", (e) => {
+  const fileForm = e.target.files[0];
+  const bodyFormDataForm = new FormData();
+  bodyFormDataForm.append("document_form", fileForm);
+  console.log(arrSinistreIDSelect);
+  fetch(`/api/declarations/single-formulaire/post/${arrSinistreIDSelect}`, {
+    method: "POST",
+    body: bodyFormDataForm,
+  })
+    .then((response) => response.json())
+    .then((response) => {
+      if (response.error) {
+        switch (response.error) {
+          case "limite du nombre de formulaire dépassée (1)":
+            alert("Vous ne pouvez pas ajouter plus de 1 formulaire");
+            break;
+          default:
+            if (response.error.slice(-15) == "(limite : 2 mo)") {
+              alert("Le fichier est trop volumineux (limite de 2mo)");
+            } else {
+              alert(response.error);
+            }
+        }
+      } else if (response.success) {
+        alert(response.success);
+        boutonNouveauFormulaire.form.reset();
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
 });

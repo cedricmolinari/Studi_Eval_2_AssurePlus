@@ -45,6 +45,7 @@ elSelectClient.addEventListener("change", (event) => {
   document.querySelector("#ligneComClt").innerHTML = ``;
   document.querySelector("#comRef").value = ``;
   document.querySelector("#lignePhotoSin").innerHTML = ``;
+  document.querySelector("#ligneFormSin").innerHTML = ``;
   var clientID;
   for (let i = 0; i < arrListeClients[0].message.length; i++) {
     if (
@@ -152,6 +153,7 @@ elSelectSinistre.addEventListener("change", (event) => {
             ? ""
             : response.message.result.commentaire_referent_sin;
         document.querySelector("#lignePhotoSin").innerHTML = ``;
+        console.log(response);
         fetch(
           `/api/declarations/multiple-images/get/${response.message.result.id_sin}`,
           {
@@ -177,7 +179,7 @@ elSelectSinistre.addEventListener("change", (event) => {
                 );
                 elementImg_DetailSinPhotos.setAttribute("width", "300");
                 elementImg_DetailSinPhotos.setAttribute("height", "300");
-                elementImg_DetailSinPhotos.style.margin = "10px"
+                elementImg_DetailSinPhotos.style.margin = "10px";
                 document
                   .querySelector("#lignePhotoSin")
                   .appendChild(elementImg_DetailSinPhotos);
@@ -186,27 +188,47 @@ elSelectSinistre.addEventListener("change", (event) => {
                 var elementBr = document.createElement("br");
                 document.querySelector("#lignePhotoSin").appendChild(elementBr);
 
-                //convert byte array to base64
-                function _arrayBufferToBase64(buffer) {
-                  var binary = "";
-                  var bytes = new Uint8Array(buffer);
-                  var len = bytes.byteLength;
-                  for (var i = 0; i < len; i++) {
-                    binary += String.fromCharCode(bytes[i]);
-                  }
-                  return window.btoa(binary);
-                }
+                // Set the source of the image to the URL of the image in the Digital Ocean Space
+                let imageUrl = `https://uploadphotos.fra1.digitaloceanspaces.com/${response.message.result[j].libelle_pho}`; // Remplacer 'libelle_pho' par le champ contenant le nom de l'image
 
-                //convert base64 to string
-                var decodedStringAtoB = window.atob(
-                  _arrayBufferToBase64(
-                    response.message.result[j].image_pho.data
-                  )
-                );
                 document.getElementById(
                   `imgView${response.message.result[j].id_pho}`
-                ).src = `${decodedStringAtoB}`;
+                ).src = imageUrl;
               }
+            });
+        });
+        console.log(response);
+        fetch(
+          `/api/declarations/single-formulaire/get/${response.message.result.id_sin}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        ).then((response) => {
+          response
+            .json()
+            .then((message) => ({
+              message: message,
+              status: response.status,
+            }))
+            .then((response) => {
+              //ajoute un formulaire
+              console.log(response);
+              var elementA_DetailSinForm = document.createElement("a");
+              elementA_DetailSinForm.setAttribute(
+                "id",
+                `formLink${response.message.result[0].id_form}`
+              );
+
+              document
+                .querySelector("#ligneFormSin")
+                .appendChild(elementA_DetailSinForm);
+              let imageUrl = `https://uploadphotos.fra1.digitaloceanspaces.com/${response.message.result[0].libelle_form}`; // Remplacer 'libelle_pho' par le champ contenant le nom de l'image
+
+              elementA_DetailSinForm.href = imageUrl;
+              elementA_DetailSinForm.textContent = "Télécharger le formulaire";
             });
         });
       });
@@ -217,8 +239,9 @@ elSelectSinistre.addEventListener("change", (event) => {
 document.querySelector("#modifComRef").addEventListener("click", () => {
   if (consultationSin) {
     //document.querySelector('#selectEtatSin').style.display = '';
-    document.querySelector('#submitModifs').removeAttribute('disabled');
-    document.querySelector('#submitModifs').innerHTML = 'Cliquer ici pour enregistrer';
+    document.querySelector("#submitModifs").removeAttribute("disabled");
+    document.querySelector("#submitModifs").innerHTML =
+      "Cliquer ici pour enregistrer";
     document.querySelector("#comRef").removeAttribute("disabled");
   } else {
     alert("Merci de sélectionner un sinistre");
@@ -229,15 +252,15 @@ var editionEtatSin = false;
 //changement d'état du sinistre
 document.querySelector("#modifEtatSin").addEventListener("click", () => {
   if (consultationSin) {
-    editionEtatSin = true
-    document.querySelector('#submitModifs').removeAttribute('disabled');
-    document.querySelector('#submitModifs').innerHTML = 'Cliquer ici pour enregistrer';
-    document.querySelector("#etatSin").innerHTML = '';
+    editionEtatSin = true;
+    document.querySelector("#submitModifs").removeAttribute("disabled");
+    document.querySelector("#submitModifs").innerHTML =
+      "Cliquer ici pour enregistrer";
+    document.querySelector("#etatSin").innerHTML = "";
     const select = document.createElement("select");
-    select.setAttribute('id', 'selectEtatSin')
+    select.setAttribute("id", "selectEtatSin");
     const optionEnCours = document.createElement("option");
     const optionTermine = document.createElement("option");
-
 
     optionEnCours.value = "en_cours";
     optionEnCours.text = "En cours";
@@ -255,15 +278,20 @@ document.querySelector("#modifEtatSin").addEventListener("click", () => {
 });
 
 //enregistrer les modifications
-document.querySelector('#submitModifs').addEventListener('click', () => {
-  document.querySelector('#comRef').setAttribute('disabled', '');
+document.querySelector("#submitModifs").addEventListener("click", () => {
+  document.querySelector("#comRef").setAttribute("disabled", "");
 
-  var valeurComRef = document.querySelector('#comRef').value;
-  document.querySelector('#submitModifs').setAttribute('disabled', '');
-  document.querySelector('#submitModifs').value = 'Cliquer sur les icones d\'édition pour modifier';
+  var valeurComRef = document.querySelector("#comRef").value;
+  document.querySelector("#submitModifs").setAttribute("disabled", "");
+  document.querySelector("#submitModifs").value =
+    "Cliquer sur les icones d'édition pour modifier";
 
-  var sinistreID = document.querySelector('#menu-sinistres').selectedOptions[0].id
-  var inputData = { id_sin: sinistreID, commentaire_referent_sin: valeurComRef}
+  var sinistreID =
+    document.querySelector("#menu-sinistres").selectedOptions[0].id;
+  var inputData = {
+    id_sin: sinistreID,
+    commentaire_referent_sin: valeurComRef,
+  };
   fetch(`/api/referent/put/com-referent/${sinistreID}`, {
     method: "PUT",
     headers: {
@@ -279,13 +307,14 @@ document.querySelector('#submitModifs').addEventListener('click', () => {
       }))
       .then((response) => {
         console.log(response);
-      })
-  })
+      });
+  });
   if (editionEtatSin) {
-    document.querySelector('#selectEtatSin').style.display = 'none';
-    document.querySelector('#etatSin').innerHTML = document.querySelector('#selectEtatSin').selectedOptions[0].innerHTML;
-    var valeurEtatSin = document.querySelector('#etatSin').innerHTML;
-    var inputData = { id_sin: sinistreID, etat_sin: valeurEtatSin}
+    document.querySelector("#selectEtatSin").style.display = "none";
+    document.querySelector("#etatSin").innerHTML =
+      document.querySelector("#selectEtatSin").selectedOptions[0].innerHTML;
+    var valeurEtatSin = document.querySelector("#etatSin").innerHTML;
+    var inputData = { id_sin: sinistreID, etat_sin: valeurEtatSin };
     console.log(inputData);
     fetch(`/api/referent/put/etat-sinistre/${sinistreID}`, {
       method: "PUT",
@@ -300,11 +329,9 @@ document.querySelector('#submitModifs').addEventListener('click', () => {
           message: message,
           status: response.status,
         }))
-        .then((response) => {
-        })
-      })
-    }
-    alert('Modification effectuée !')
-    location.reload();
-
-})
+        .then((response) => {});
+    });
+  }
+  alert("Modification effectuée !");
+  location.reload();
+});
