@@ -58,12 +58,13 @@ fetch("/api/clients/", {
         },
       }).then((response) => {
         response
-          .json()
-          .then((message) => ({
-            message: message,
-            status: response.status,
-          }))
-          .then((response) => {
+        .json()
+        .then((message) => ({
+          message: message,
+          status: response.status,
+        }))
+        .then((response) => {
+            console.log(response);
             //ajoute tous les sinistres du client connecté
             function createMouseOverHandler(element) {
               return function () {
@@ -101,10 +102,21 @@ fetch("/api/clients/", {
                   "mouseout",
                   createMouseOutHandler(elementP_Ref)
                 );
+                
+                //conversion date
+                let dateStr = response.message.result[i].date_sin;
 
+                let dateObj = new Date(dateStr);
+                let day = String(dateObj.getDate()).padStart(2, '0');
+                let month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                let year = dateObj.getFullYear();
+
+                let formattedDate = day + "-" + month + "-" + year;
+
+                //ajout date
                 var elementP_Date = document.createElement("p");
                 var dateSinistre = document.createTextNode(
-                  response.message.result[i].date_sin
+                  formattedDate
                 );
                 elementP_Date.appendChild(dateSinistre);
                 colDate.appendChild(elementP_Date);

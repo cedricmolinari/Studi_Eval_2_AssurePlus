@@ -11,6 +11,7 @@
     <title>Document</title>
     <style>
       body {
+        margin-bottom: 100px;
         display: flex;
         min-height: 100vh;
         flex-direction: column;
@@ -47,7 +48,7 @@
       <a class="navbar-brand">Inscription</a>
     </nav>
     <form class="form">
-      <div class="form-group">
+      <div class="form-group" id="divNumClt">
         <label for="num_clt">Numéro client :</label>
         <input
           type="text"
@@ -58,7 +59,7 @@
           class="form-control"
         />
       </div>
-      <div class="form-group">
+      <div class="form-group" id="divMdpClt">
         <label for="mdp_clt">Mot de passe :</label>
         <input
           type="password"
@@ -115,7 +116,7 @@
           class="form-control"
         />
       </div>
-      <div class="form-group">
+      <div class="form-group" id="divCPClt">
         <label for="cp_clt">Code postal :</label>
         <input
           type="text"
@@ -128,7 +129,7 @@
           class="form-control"
         />
       </div>
-      <div class="form-group">
+      <div class="form-group" id="divMailClt">
         <label for="mail_clt">Email :</label>
         <input
           type="mail"
