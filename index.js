@@ -11,9 +11,7 @@ import { decryptPassword } from './decryptPassword.js';
 import session from 'express-session';
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
-import bcrypt from 'bcrypt';
 import bodyParser from 'body-parser';
-//import aws from 'aws-sdk';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 dotenv.config()
 
@@ -85,11 +83,9 @@ import { success, error } from './functions.js';
     app.use(express.urlencoded({ extended: true }));
 
     // <--- mise en place d'un profil admin --->
-    // Ajoutez le middleware bodyParser pour traiter le corps de la requête
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
 
-    // Utiliser les sessions Express
     app.use(
       session({
         secret: 'your-secret-key',
@@ -157,11 +153,9 @@ import { success, error } from './functions.js';
       })(req, res, next);
     });
     
-    // Configurer Passport.js
     app.use(passport.initialize());
     app.use(passport.session());
 
-    // Ajoutez les fonctions de sérialisation et de désérialisation de Passport
     passport.serializeUser((user, done) => {
       done(null, user.utilisateur_ut);
     });
@@ -356,7 +350,6 @@ import { success, error } from './functions.js';
       TestRouter.route('/api/declarations/single-formulaire/post/:sinistre_id')
       .post(function(request, response, next) {       
         upload.single('document_form')(request, response, function(error) {
-          console.log(response);
             if (error) {
               return response.status(500).json({error: 'Error Uploading File'});
             } else {
@@ -478,7 +471,6 @@ import { success, error } from './functions.js';
     // Supprime le formulaire d'un sinistre d'après son ID
     .post((req, res) => {
       pgsql.query(`DELETE FROM \"Formulaires\" WHERE sinistre_id = $1::INTEGER AND id_form = $2::INTEGER;`, [req.body.sinistre_id, req.body.id_form], (err, result) => {
-        console.log(result);
         if (err) {
           res.json(error(err.message))
         } else {
@@ -642,7 +634,6 @@ import { success, error } from './functions.js';
     
 
     app.use(TestRouter)
-    //app.listen(8080, () => console.log('Started on port ' + 8080))
-    app.listen(3000, 'localhost', () => console.log('Started on port ' + 3000))
+    app.listen(8080, () => console.log('Started on port ' + 8080))
   }
 });

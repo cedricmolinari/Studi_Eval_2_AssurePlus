@@ -17,11 +17,10 @@ submitConnectForm.addEventListener('submit', event => {
     event.preventDefault();
     const formData = new FormData(submitConnectForm);
     const data = Object.fromEntries(formData);
-    console.log(JSON.stringify(data));
 
     
     fetch('/api/referents/connexion', {
-        method: 'POST', // or 'PUT'
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -35,7 +34,6 @@ submitConnectForm.addEventListener('submit', event => {
                 status: response.status
             }))
             .then(response => {
-                console.log(response.message);
                 connexion = response.message.password_ut
 
                 if (!connexion) {
@@ -51,7 +49,6 @@ submitConnectForm.addEventListener('submit', event => {
                     }
                     
                 } else {
-                    console.log('vous etes connecté !');
                     connexion = true
                 }
             })

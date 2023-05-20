@@ -544,7 +544,6 @@ fetch("/api/clients/", {
                             return response.json();
                           })
                           .then((response) => {
-                            console.log(response);
                             var elementP_DetailSinPhotos =
                               document.createElement("p");
                             elementP_DetailSinPhotos.innerHTML = "Photos : ";
@@ -642,7 +641,6 @@ fetch("/api/clients/", {
                             return response.json();
                           })
                           .then((response) => {
-                            console.log(response.result.length);
                             if (response.result.length > 0) {
 
                               //ajoute un formulaire
@@ -655,9 +653,7 @@ fetch("/api/clients/", {
                               );
                               infoSinistreDetail.appendChild(elementDivForm);
   
-                              // Set the source of the image to the URL of the image in the Digital Ocean Space
-                              let imageUrl = `https://uploadphotos.fra1.digitaloceanspaces.com/${response.result[0].libelle_form}`; // Remplacer 'libelle_pho' par le champ contenant le nom de l'image
-                              // Ajoute un formulaire
+                              let imageUrl = `https://uploadphotos.fra1.digitaloceanspaces.com/${response.result[0].libelle_form}`;
                               
                               formulaireID.push(response.result[0].id_form)
                               var elementA = document.createElement("a");
@@ -665,12 +661,12 @@ fetch("/api/clients/", {
                                 "id",
                                 "LinkFormulaire"
                               );
-                              elementA.href = imageUrl; // Remplacez imageUrl par l'URL de votre PDF
+                              elementA.href = imageUrl;
                               
                               elementA.textContent = "Télécharger le formulaire";
                               elementDivForm.appendChild(elementA);
   
-                              // Create a delete button
+                              // Ajoute un bouton de suppression
                               var deleteButton = document.createElement("input");
                               deleteButton.type = 'button';
                               deleteButton.setAttribute(
@@ -736,7 +732,6 @@ boutonModifDonnees.addEventListener("click", (e) => {
   });
 
   //active tous les éléments pour pouvoir les modifier
-  console.log(disabledElements);
   disabledElements.forEach((element) => {
     element = document.querySelector(`#${element}`);
     element.removeAttribute("disabled");
@@ -754,9 +749,9 @@ boutonModifDonnees.addEventListener("click", (e) => {
       );
       var elDeleteToDelete = document.getElementById(e.target.id);
 
-      // Vérifier si l'élément HTML a été trouvé
+      // Vérifie si l'élément HTML a été trouvé
       if (elImgToDelete !== null) {
-        // Supprimer l'élément HTML
+        // Supprime l'élément HTML
         arrPhotosID.push(`imgView${getIDPhoFromDeleteBtn}`);
         elImgToDelete.remove();
         elDeleteToDelete.remove();
@@ -780,7 +775,7 @@ boutonModifDonnees.addEventListener("click", (e) => {
       fetch(
         `/api/modif-declaration/multiple-images/post/${arrSinistreIDSelect}`,
         {
-          method: "POST", // or 'PUT'
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
@@ -801,11 +796,10 @@ boutonModifDonnees.addEventListener("click", (e) => {
       sinistre_id: `${arrSinistreIDSelect}`,
       id_form: formulaireID[0],
     };
-    console.log(formData);
     fetch(
       `/api/modif-declaration/single-formulaire/post/${formulaireID}`,
       {
-        method: "POST", // or 'PUT'
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -999,7 +993,6 @@ boutonNouveauFormulaire.addEventListener("change", (e) => {
   const fileForm = e.target.files[0];
   const bodyFormDataForm = new FormData();
   bodyFormDataForm.append("document_form", fileForm);
-  console.log(arrSinistreIDSelect);
   fetch(`/api/declarations/single-formulaire/post/${arrSinistreIDSelect}`, {
     method: "POST",
     body: bodyFormDataForm,

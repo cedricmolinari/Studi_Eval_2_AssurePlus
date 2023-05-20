@@ -68,7 +68,6 @@ elSelectClient.addEventListener("change", (event) => {
         status: response.status,
       }))
       .then((response) => {
-        console.log(response);
         arrListeSinistres.push(response);
         while (
           elSelectSinistre.firstChild &&
@@ -119,7 +118,6 @@ elSelectSinistre.addEventListener("change", (event) => {
         status: response.status,
       }))
       .then((response) => {
-        console.log(response);
         var boolResp = response.message.result.responsable_sin;
         var boolDmg = response.message.result.dommage_corporel_sin;
         document.querySelector(
@@ -153,7 +151,6 @@ elSelectSinistre.addEventListener("change", (event) => {
             ? ""
             : response.message.result.commentaire_referent_sin;
         document.querySelector("#lignePhotoSin").innerHTML = ``;
-        console.log(response);
         fetch(
           `/api/declarations/multiple-images/get/${response.message.result.id_sin}`,
           {
@@ -188,8 +185,7 @@ elSelectSinistre.addEventListener("change", (event) => {
                 var elementBr = document.createElement("br");
                 document.querySelector("#lignePhotoSin").appendChild(elementBr);
 
-                // Set the source of the image to the URL of the image in the Digital Ocean Space
-                let imageUrl = `https://uploadphotos.fra1.digitaloceanspaces.com/${response.message.result[j].libelle_pho}`; // Remplacer 'libelle_pho' par le champ contenant le nom de l'image
+                let imageUrl = `https://uploadphotos.fra1.digitaloceanspaces.com/${response.message.result[j].libelle_pho}`;
 
                 document.getElementById(
                   `imgView${response.message.result[j].id_pho}`
@@ -197,7 +193,6 @@ elSelectSinistre.addEventListener("change", (event) => {
               }
             });
         });
-        console.log(response);
         fetch(
           `/api/declarations/single-formulaire/get/${response.message.result.id_sin}`,
           {
@@ -215,7 +210,6 @@ elSelectSinistre.addEventListener("change", (event) => {
             }))
             .then((response) => {
               //ajoute un formulaire
-              console.log(response);
               var elementA_DetailSinForm = document.createElement("a");
               elementA_DetailSinForm.setAttribute(
                 "id",
@@ -238,7 +232,6 @@ elSelectSinistre.addEventListener("change", (event) => {
 //ajout d'un commentaire par le référent du dossier quand on clique sur le bouton d'édition
 document.querySelector("#modifComRef").addEventListener("click", () => {
   if (consultationSin) {
-    //document.querySelector('#selectEtatSin').style.display = '';
     document.querySelector("#submitModifs").removeAttribute("disabled");
     document.querySelector("#submitModifs").innerHTML =
       "Cliquer ici pour enregistrer";
@@ -306,7 +299,6 @@ document.querySelector("#submitModifs").addEventListener("click", () => {
         status: response.status,
       }))
       .then((response) => {
-        console.log(response);
       });
   });
   if (editionEtatSin) {
@@ -315,7 +307,6 @@ document.querySelector("#submitModifs").addEventListener("click", () => {
       document.querySelector("#selectEtatSin").selectedOptions[0].innerHTML;
     var valeurEtatSin = document.querySelector("#etatSin").innerHTML;
     var inputData = { id_sin: sinistreID, etat_sin: valeurEtatSin };
-    console.log(inputData);
     fetch(`/api/referent/put/etat-sinistre/${sinistreID}`, {
       method: "PUT",
       headers: {

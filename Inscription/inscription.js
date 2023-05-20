@@ -80,7 +80,6 @@ inscriptionForm.addEventListener('submit', event => {
     event.preventDefault();
     const formData = new FormData(inscriptionForm);
     const data = Object.fromEntries(formData);
-    console.log(JSON.stringify(data));
 
     checkNumClt(getVal(inputNumClt))
     ckeckMdpClt(getVal(inputMdpClt))
@@ -101,7 +100,6 @@ inscriptionForm.addEventListener('submit', event => {
           message: message,
           status: response.status
         })).then(response => {
-          console.log(response.message);
           if (response.message.message == "Numéro client et/ou adresse mail déjà enregistrée, merci de vous connecter") {
             alert(response.message.message)
             window.location.href = "../Connexion/connexion.html";

@@ -45,7 +45,6 @@ submitConnectForm.addEventListener("submit", async (event) => {
         sessionStorage.setItem("clientID", newClientID);
         sessionStorage.setItem("bandeauConnexion", newBandeauConnexion);
 
-        // Une fois que toutes les opérations ont été résolues, vous pouvez soumettre le formulaire
         submitConnectForm.submit();
       }
     }

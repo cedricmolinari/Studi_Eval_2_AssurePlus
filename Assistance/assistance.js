@@ -8,12 +8,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const listeGaragesDiv = document.getElementById("listeGarages");
   var listeGarages = [];
 
-  // Fonction exemple trouverGarageLePlusProche
   const trouverGarageLePlusProche = async () => {
-    // Demander à l'utilisateur d'entrer son adresse
     var adresseClient = userInput.value;
 
-    // Vérifier si l'utilisateur a entré une adresse
+    // Vérifie si l'utilisateur a entré une adresse
     if (adresseClient !== null && adresseClient.trim() !== "") {
     } else {
       alert("Aucune adresse saisie.");
