@@ -50,7 +50,7 @@ elSelectClient.addEventListener("change", (event) => {
   for (let i = 0; i < arrListeClients[0].message.length; i++) {
     if (
       arrListeClients[0].message[i].num_clt ==
-      event.target.value.substring(0, 3)
+      event.target.value.substring(0, 5)
     ) {
       clientID = arrListeClients[0].message[i].id_clt;
     }
@@ -75,6 +75,7 @@ elSelectClient.addEventListener("change", (event) => {
         ) {
           elSelectSinistre.removeChild(elSelectSinistre.lastChild);
         }
+        
         for (let i = 0; i < response.message.result.length; i++) {
           const elOption = document.createElement("option");
           elOption.setAttribute("id", `${response.message.result[i].id_sin}`);
