@@ -64,7 +64,6 @@ fetch("/api/clients/", {
           status: response.status,
         }))
         .then((response) => {
-            console.log(response);
             //ajoute tous les sinistres du client connecté
             function createMouseOverHandler(element) {
               return function () {
@@ -714,6 +713,7 @@ fetch("/api/clients/", {
     });
 });
 var arrImgSinElements = [];
+var formulaireToDelete;
 var addedElements = disabledElements;
 //fait disparaitre le bouton modifier les données et ajoute le bouton sauvegarder les modifications
 boutonModifDonnees.addEventListener("click", (e) => {
@@ -773,8 +773,9 @@ boutonModifDonnees.addEventListener("click", (e) => {
   if (document.querySelector('#LinkFormulaire') != undefined) {
 
     document.querySelector('#BtnDeleteFormulaire').addEventListener("click", (e) => {
-      document.querySelector('#LinkFormulaire').remove();
-      document.querySelector('#BtnDeleteFormulaire').remove();
+      document.querySelector('#LinkFormulaire').style.display = "none";
+      document.querySelector('#BtnDeleteFormulaire').style.display = "none";
+      formulaireToDelete = true
     })
   }
   document.querySelector("#saveModif").addEventListener("click", () => {
@@ -808,24 +809,33 @@ boutonModifDonnees.addEventListener("click", (e) => {
       sinistre_id: `${arrSinistreIDSelect}`,
       id_form: formulaireID[0],
     };
-    fetch(
-      `/api/modif-declaration/single-formulaire/post/${formulaireID}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      }
-    ).then((response) => {
-      response
-        .json()
-        .then((message) => ({
-          message: message,
-          status: response.status,
-        }))
-        .then((response) => {});
-    });
+    if (formulaireToDelete) {
+
+      fetch(
+        `/api/modif-declaration/single-formulaire/post/${formulaireID}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      ).then((response) => {
+        response
+          .json()
+          .then((message) => ({
+            message: message,
+            status: response.status,
+          }))
+          .then((response) => {
+            document.querySelector('#BtnDeleteFormulaire').remove();
+            document.querySelector('#LinkFormulaire').remove();
+          });
+      });
+    } else {
+      document.querySelector('#LinkFormulaire').style.display = "";
+      document.querySelector('#BtnDeleteFormulaire').style.display = "";
+    }
   
     var inputData;
     //enregistre la modification de la rue

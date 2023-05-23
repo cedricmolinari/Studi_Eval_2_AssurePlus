@@ -296,21 +296,31 @@ import { success, error } from './functions.js';
         })
       })
 
-    TestRouter.route('/api/clients/num/')
-      //compare le hash du mdp saisi lors d'une connexion d'un client
-      .post((req, res) => {
-        
-        pgsql.query(`SELECT num_clt, mdp_clt FROM \"Clients\" WHERE num_clt = $1;`, [req.body.num_clt], (err, result) => {
+      TestRouter.route('/api/clients/num/')
+  .post((req, res) => {
+    pgsql.query(`SELECT num_clt, mdp_clt FROM \"Clients\" WHERE num_clt = $1;`, [req.body.num_clt], (err, result) => {
+      if (err) {
+        res.json(error(err.message))
+      } else {
+        if (result.rows[0]) {  // Vérifie que result.rows[0] existe
           const json = result.rows[0].mdp_clt;
           const obj = JSON.parse(json);
-          if (err) {
-            res.json(error(err.message))
+          const isPasswordCorrect = decryptPassword(obj, req.body.mdp_clt);
+          if (isPasswordCorrect) {
+            res.status(200).json(success({
+              num_clt: result.rows[0].num_clt,
+              mdp_clt: isPasswordCorrect
+            }));
           } else {
-            res.status(200).json(success(
-              {num_clt: result.rows[0].num_clt,
-                mdp_clt : decryptPassword(obj, req.body.mdp_clt)}));
+            res.status(401).json({ message: 'Mot de passe incorrect' });
           }
-      })})
+        } else {
+          res.status(404).json({ message: 'Ce numéro client est non trouvé' });  // Si result.rows[0] n'existe pas, renvoie une erreur
+        }
+      }
+    });
+  });
+
 
     TestRouter.route('/api/declaration/:client_id')
       //enregistre la déclaration de sinistre d'un client
