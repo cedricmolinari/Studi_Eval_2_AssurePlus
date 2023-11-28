@@ -3,6 +3,7 @@
     "node": "17.9.1"
   },
   "scripts": {
+    "start": "node app.js",
     "build:digitalocean": "npm install --production=false && npm run build && npm ci",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
