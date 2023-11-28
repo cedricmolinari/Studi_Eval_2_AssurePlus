@@ -641,10 +641,11 @@ import { success, error } from './functions.js';
       })
     })
 
-    
 
-    app.use(TestRouter)
-    app.listen(8080, () => console.log('Started on port ' + 8080))
-    //app.listen(3000, 'localhost', () => console.log('Started on port ' + 3000))
+
+      const PORT = process.env.PORT || 8080;
+
+      app.use(TestRouter);
+      app.listen(PORT, () => console.log('Started on port ' + PORT));
   }
 });
