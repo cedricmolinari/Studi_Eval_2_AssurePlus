@@ -37,12 +37,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
 
 const s3Client = new S3Client({
-  endpoint: "https://fra1.digitaloceanspaces.com", // Find your endpoint in the control panel, under Settings. Prepend "https://".
-  forcePathStyle: false, // Configures to use subdomain/virtual calling format.
-  region: "fra1", // Must be "us-east-1" when creating new Spaces. Otherwise, use the region in your endpoint (e.g. nyc3).
+    endpoint: "https://s3.eu-west-3.amazonaws.com", // Endpoint pour la région eu-west-3
+    region: "eu-west-3", // Région du bucket
   credentials: {
-    accessKeyId: "DO00JNW6328L4HPUE4XK", // Access key pair. You can create access key pairs using the control panel or API.
-    secretAccessKey: process.env.SPACES_SECRET // Secret access key defined through an environment variable.
+    accessKeyId: process.env.AccessKeyId,
+    secretAccessKey: process.env.secretAccessKey
   }
 });
 
@@ -109,10 +108,11 @@ import { success, error } from './functions.js';
     }
 
     const customLocalStrategy = (req, username, password, done) => {
+
       (async () => {
         try {
           const user = await findUserByUsername(req.body.utilisateur_ut);
-    
+          console.log(user)
           if (!user) {
             return done(null, false, { message: 'Incorrect username.' });
           }
@@ -429,6 +429,7 @@ import { success, error } from './functions.js';
     TestRouter.route('/api/declarations/single-image/:sinistre_id')
     .post(function(request, response, next) {       
         upload.single('image_pho')(request, response, function(error) {
+            console.log(err)
             if (error) {
               return response.status(500).json({error: 'Error Uploading File'});
             } else {

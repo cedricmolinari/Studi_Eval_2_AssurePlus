@@ -7,8 +7,7 @@ let connexion = false
 
 // retourne la valeur d'un champ input'
 function getVal(input) {
-    const val = input.value;
-    return val;
+    return input.value;
 }
 
 
@@ -17,7 +16,6 @@ submitConnectForm.addEventListener('submit', event => {
     event.preventDefault();
     const formData = new FormData(submitConnectForm);
     const data = Object.fromEntries(formData);
-
     
     fetch('/api/referents/connexion', {
         method: 'POST',
@@ -26,8 +24,8 @@ submitConnectForm.addEventListener('submit', event => {
         },
         body: JSON.stringify(data)
         })
-
         .then((response) => {
+            console.log(response)
             response.json()
             .then(message => ({
                 message: message,
