@@ -51,7 +51,6 @@ var upload = multer({
   storage: multerS3({
       s3: s3Client,
       bucket: 'img-assureplus',
-      acl: 'public-read',
       metadata: function (request, file, cb) {
           cb(null, { fieldName: file.fieldname });
       },
