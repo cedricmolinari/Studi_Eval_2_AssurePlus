@@ -594,7 +594,7 @@ fetch("/api/clients/", {
                               elementImg_DetailSinPhotos.style.height = "200px";
 
                               // Set the source of the image to the URL of the image in the Digital Ocean Space
-                              let imageUrl = `https://uploadphotos.fra1.digitaloceanspaces.com/${response.result[j].libelle_pho}`; // Remplacer 'libelle_pho' par le champ contenant le nom de l'image
+                              let imageUrl = `https://img-assureplus.s3.eu-west-3.amazonaws.com/${response.result[j].libelle_pho}`; // Remplacer 'libelle_pho' par le champ contenant le nom de l'image
                               elementImg_DetailSinPhotos.src = imageUrl;
 
                               elementDiv.appendChild(
@@ -664,7 +664,7 @@ fetch("/api/clients/", {
                               );
                               infoSinistreDetail.appendChild(elementDivForm);
   
-                              let imageUrl = `https://uploadphotos.fra1.digitaloceanspaces.com/${response.result[0].libelle_form}`;
+                              let imageUrl = `https://img-assureplus.s3.eu-west-3.amazonaws.com/${response.result[0].libelle_form}`;
                               
                               formulaireID.push(response.result[0].id_form)
                               var elementA = document.createElement("a");

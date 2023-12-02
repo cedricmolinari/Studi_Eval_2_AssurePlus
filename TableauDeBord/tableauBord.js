@@ -186,7 +186,7 @@ elSelectSinistre.addEventListener("change", (event) => {
                 var elementBr = document.createElement("br");
                 document.querySelector("#lignePhotoSin").appendChild(elementBr);
 
-                let imageUrl = `https://uploadphotos.fra1.digitaloceanspaces.com/${response.message.result[j].libelle_pho}`;
+                let imageUrl = `https://img-assureplus.s3.eu-west-3.amazonaws.com/${response.message.result[j].libelle_pho}`;
 
                 document.getElementById(
                   `imgView${response.message.result[j].id_pho}`
@@ -220,7 +220,7 @@ elSelectSinistre.addEventListener("change", (event) => {
               document
                 .querySelector("#ligneFormSin")
                 .appendChild(elementA_DetailSinForm);
-              let imageUrl = `https://uploadphotos.fra1.digitaloceanspaces.com/${response.message.result[0].libelle_form}`; // Remplacer 'libelle_pho' par le champ contenant le nom de l'image
+              let imageUrl = `https://img-assureplus.s3.eu-west-3.amazonaws.com/${response.message.result[0].libelle_form}`; // Remplacer 'libelle_pho' par le champ contenant le nom de l'image
 
               elementA_DetailSinForm.href = imageUrl;
               elementA_DetailSinForm.textContent = "Télécharger le formulaire";
