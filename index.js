@@ -37,9 +37,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
 
 const s3Client = new S3Client({
-    endpoint: "https://s3.eu-west-3.amazonaws.com", // Endpoint pour la région eu-west-3
     region: "eu-west-3", // Région du bucket
+    //endpoint: 'https://img-assureplus.s3.eu-west-3.amazonaws.com',
   credentials: {
+
     accessKeyId: process.env.AccessKeyId,
     secretAccessKey: process.env.secretAccessKey
   }
@@ -49,7 +50,7 @@ const s3Client = new S3Client({
 var upload = multer({
   storage: multerS3({
       s3: s3Client,
-      bucket: 'uploadphotos',
+      bucket: 'img-assureplus',
       acl: 'public-read',
       metadata: function (request, file, cb) {
           cb(null, { fieldName: file.fieldname });
@@ -429,7 +430,7 @@ import { success, error } from './functions.js';
     TestRouter.route('/api/declarations/single-image/:sinistre_id')
     .post(function(request, response, next) {       
         upload.single('image_pho')(request, response, function(error) {
-            console.log(err)
+            console.log(error)
             if (error) {
               return response.status(500).json({error: 'Error Uploading File'});
             } else {
